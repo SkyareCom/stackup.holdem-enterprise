@@ -12,7 +12,6 @@ function boot(){
     .levelTypeCell select{display:block!important;position:relative!important;width:100%!important}
   `;
   document.head.appendChild(style);
-  document.getElementById('identifierModalV1')?.remove();
 
   const old=document.getElementById('newStructure');
   if(old){
