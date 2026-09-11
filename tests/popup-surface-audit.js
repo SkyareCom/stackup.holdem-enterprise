@@ -71,9 +71,10 @@ for(const forbidden of ['preventDefault()','stopImmediatePropagation()','openDra
 }
 
 const theme=read('app-theme.js');
-for(const token of ["loadScript('in-app-lists.js","loadScript('inline-interactions-v1.js","loadScript('clickable-list-drawer-v1.js",'s.async=false']){
-  if(!theme.includes(token))fail(`app-theme.js: falta carregamento determinístico ${token}`);
+for(const token of ["loadScript('in-app-lists.js","loadScript('inline-interactions-v1.js","loadScript('clickable-list-drawer-v1.js",'s.defer=true']){
+  if(!theme.includes(token))fail(`app-theme.js: falta carregamento global não bloqueante ${token}`);
 }
+if(theme.includes('s.async=false')||theme.includes('s.defer=false'))fail('app-theme.js: runtime global voltou a usar carregamento bloqueante');
 
 const setupOwner=read('setup-structure-owner-v1.js');
 if(/identifierModal|position\s*:\s*fixed/i.test(setupOwner))fail('setup-structure-owner-v1.js: seletor de identificador ainda usa modal');
@@ -83,7 +84,9 @@ const dealerSync=read('dealer-device-sync-v1.js');
 if(/position\s*:\s*fixed|dealerSyncOverlay/i.test(dealerSync))fail('dealer-device-sync-v1.js: aviso de sincronização ainda usa overlay');
 
 const pagesWorkflow=read('.github/workflows/pages.yml');
-if(!pagesWorkflow.includes("canonicalize(s,'app-theme.js'"))fail('pages.yml: publicação não garante app-theme nas telas operacionais');
+for(const token of ["canonicalize(s,'in-app-lists.js'","canonicalize(s,'inline-interactions-v1.js'","canonicalize(s,'clickable-list-drawer-v1.js'","canonicalize(s,'app-theme.js'"]){
+  if(!pagesWorkflow.includes(token))fail(`pages.yml: publicação não garante camada no-popup ${token}`);
+}
 
 if(deployArtifact){
   for(const file of fs.readdirSync(root).filter(f=>f.endsWith('.html'))){
