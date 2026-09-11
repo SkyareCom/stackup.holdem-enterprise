@@ -83,5 +83,5 @@
     return null;
   };
 
-  window.StackupInlineFeedback={show:showNotice,decision:showDecision};
+  window.StackupInlineFeedback={show:showNotice,decision:showDecision,mount:showDecision};
 })();
