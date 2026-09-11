@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TD / FLOOR STATION</title>
+<link rel="stylesheet" href="app-theme.css">
+<style>
+body{margin:0;background:#020302;color:#fff}.app{max-width:980px;margin:auto;padding:18px}.ey{color:#8DFC3B;letter-spacing:.14em}.title{margin:4px 0 24px}.section{color:#8DFC3B;letter-spacing:.14em;margin:16px 2px 7px}.label{color:#AEB8B1;margin:0 0 7px}.approvalCard{display:grid;gap:8px;margin-top:8px}.infoCard{width:100%!important;height:44px!important;min-height:44px!important;padding:10px!important;border:1px solid #27342D!important;border-radius:9px!important;background:linear-gradient(#0B100D,#060907)!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;box-sizing:border-box!important}.infoLabel{color:#AEB8B1!important;line-height:1!important;white-space:nowrap}.infoValue{color:#fff!important;font-weight:400!important;line-height:1!important;margin-left:auto!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.modeGrid,.dealerGrid,.confirmGrid{display:grid;gap:8px;margin-top:8px}.modeGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.modeBtn{display:grid!important;grid-template-columns:24px minmax(0,1fr)!important;align-items:center!important;gap:10px!important;min-height:52px!important;text-align:left!important}.modeBtn .sq{width:20px;height:20px;border:2px solid #8DFC3B;border-radius:4px;background:#060907;box-sizing:border-box}.modeBtn.active{border-color:#8DFC3B!important}.modeBtn.active .sq{background:#8DFC3B;box-shadow:inset 0 0 0 4px #060907}.dealerGrid{grid-template-columns:repeat(3,minmax(0,1fr))}.confirmGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}.actions button{width:100%!important;min-height:44px!important;border-radius:9px!important}.status{margin-top:8px;color:#AEB8B1;min-height:18px;line-height:1.45}.empty{color:#AEB8B1;padding:12px 0}.activeText{color:#8DFC3B!important}.hidden{display:none!important}.authorizedList,.requestList{display:grid;gap:8px;margin-top:8px}.authorizedRow,.requestRow{padding:10px 12px;border:1px solid #27342D;border-radius:9px;background:linear-gradient(#0B100D,#060907)}.authorizedRow b,.requestRow b{color:#8DFC3B}.requestMeta{color:#AEB8B1;margin-top:4px;font-size:12px;line-height:1.4}.hint{color:#AEB8B1;font-size:12px;line-height:1.45;margin:6px 2px 0}@media(max-width:700px){.modeGrid,.dealerGrid,.confirmGrid,.actions{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="app">
+<div class="ey">STACKUP HOLD'EM ENTERPRISE</div>
+<h1 class="title">TD / FLOOR STATION</h1>
+<div class="section">RESPONSÁVEL</div>
+<div class="approvalCard"><div class="infoCard"><span class="infoLabel">NOME</span><span id="managerName" class="infoValue"></span></div><div class="infoCard"><span class="infoLabel">AMBIENTE</span><span id="managerClub" class="infoValue"></span></div><div class="infoCard"><span class="infoLabel">FUNÇÃO</span><span id="managerRole" class="infoValue"></span></div></div>
+<div class="section">SOLICITAÇÕES OPERACIONAIS</div>
+<div id="requestList" class="requestList"></div>
+<div class="section">FINAL TABLE</div>
+<div class="approvalCard">
+  <div class="infoCard"><span class="infoLabel">STATUS</span><span id="gateStatus" class="infoValue"></span></div>
+  <div class="infoCard"><span class="infoLabel">JOGADORES</span><span id="gatePlayers" class="infoValue"></span></div>
+  <div class="infoCard"><span class="infoLabel">NÍVEL</span><span id="gateLevel" class="infoValue"></span></div>
+  <div class="infoCard"><span class="infoLabel">TEMPO PRESERVADO</span><span id="gateTime" class="infoValue"></span></div>
+</div>
+<div id="waiting" class="empty"></div>
+<div id="authorizationFlow" class="hidden">
+  <div class="section">MODO FINAL TABLE</div>
+  <div class="modeGrid"><button id="timerMode" class="modeBtn" type="button"><span class="sq"></span><span>TEMPORIZADOR</span></button><button id="manualMode" class="modeBtn" type="button"><span class="sq"></span><span>SISTEMA MANUAL</span></button></div>
+  <div class="hint">TEMPORIZADOR mantém a estrutura por tempo. SISTEMA MANUAL mantém o mesmo torneio, nível, blinds e histórico e passa o avanço para contagem de mãos.</div>
+  <div id="dealerAuthorization" class="hidden">
+    <div class="section">DEALERS AUTORIZADOS PARA A FT</div>
+    <div class="dealerGrid"><input id="dealer1" placeholder="DEALER 1 • CPF / CÓDIGO"><input id="dealer2" placeholder="DEALER 2 • CPF / CÓDIGO"><input id="dealer3" placeholder="DEALER 3 • CPF / CÓDIGO"></div>
+    <div class="hint">CADASTRE ATÉ 3 DEALERS. QUALQUER UM DOS AUTORIZADOS PODERÁ ASSUMIR A MESA FINAL COM O PRÓPRIO CHECK IN, SEM NOVA LIBERAÇÃO DO TD / FLOOR.</div>
+  </div>
+  <div class="section">CONFIRMAR TD / FLOOR</div>
+  <div class="confirmGrid"><input id="managerCpf" inputmode="numeric" placeholder="CPF DO TD / FLOOR"><input id="managerPin" inputmode="numeric" type="password" placeholder="CÓDIGO / PIN"></div>
+  <div class="actions"><button id="confirmBtn" class="primary" type="button">CONFIRMAR FINAL TABLE</button><button id="clearBtn" type="button">LIMPAR</button></div>
+</div>
+<div id="authorizedWrap" class="hidden"><div class="section">DEALERS LIBERADOS PARA A FT</div><div id="authorizedList" class="authorizedList"></div></div>
+<div id="result" class="status"></div>
+</main>
+<script src="shared.js"></script><script src="auth-engine.js"></script><script>StackupAuth.guard()</script><script src="timer-engine.js"></script><script src="request-center.js"></script><script src="final-table-hands.js"></script>
+<script>
+let selectedMode='';
+function selectedManager(){return StackupAuth.staffForSession()}
+function esc(v){return String(v||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function statusText(g){if(!g)return'AGUARDANDO BOLHA DA FT';if(g.status==='LOCKED')return'BOLHA CONCLUÍDA • AGUARDANDO AUTORIZAÇÃO';if(g.status==='RELEASED_TIMER')return'FINAL TABLE • TEMPORIZADOR';if(g.status==='AUTHORIZED_MANUAL')return state.finalTableManualActive?'FINAL TABLE • SISTEMA MANUAL ATIVO':'FINAL TABLE • AGUARDANDO DEALER AUTORIZADO';return g.status||''}
+function renderModes(){timerMode.classList.toggle('active',selectedMode==='TIMER');manualMode.classList.toggle('active',selectedMode==='MANUAL');dealerAuthorization.classList.toggle('hidden',selectedMode!=='MANUAL')}
+function renderRequests(){const staff=selectedManager(),role=String(staff?.role||'').toUpperCase();const rows=(state.operationalRequests||[]).filter(r=>r.eventId===state.eventId&&r.status==='PENDING'&&((r.roles||[]).map(x=>String(x).toUpperCase()).includes(role)||['OWNER','GESTOR'].includes(role))).slice(0,30);requestList.innerHTML=rows.length?rows.map(r=>`<div class="requestRow"><b>${esc(r.title||r.type)}</b><div class="requestMeta">${r.table?`MESA ${r.table} • `:''}${esc(r.playerName||'')}${r.dealerName?` • DEALER ${esc(r.dealerName)}`:''}</div><div class="requestMeta">${esc(r.body||'')}</div></div>`).join(''):'<div class="empty">NENHUMA SOLICITAÇÃO PENDENTE.</div>'}
+function render(){FinalTableHands.ensure();StackupRequests?.ensure?.();const session=StackupAuth.current(),staff=selectedManager(),snap=FinalTableHands.snapshot(),g=snap.gate,allowed=['OWNER','TD','FLOOR','GESTOR'].includes(staff?.role);managerName.textContent=session?.personName||staff?.name||'';managerClub.textContent=session?.clubName||'';managerRole.textContent=session?.role||staff?.role||'';renderRequests();gateStatus.textContent=statusText(g);gateStatus.classList.toggle('activeText',!!g&&g.status!=='LOCKED');gatePlayers.textContent=g?`${g.activePlayers} / ${g.capacity}`:`${(state.players||[]).filter(p=>p.status==='active').length} / ${Math.max(2,+state.seatsPerTable||9)}`;gateLevel.textContent=g?String((+g.levelIndex||0)+1):String((+state.levelIndex||0)+1);gateTime.textContent=fmtTime?.(g?.timerRemaining??state.remaining)||'00:00';const locked=!!g&&g.status==='LOCKED';authorizationFlow.classList.toggle('hidden',!locked||!allowed);waiting.textContent=locked?(allowed?'':'ESTE PERFIL NÃO POSSUI PERMISSÃO PARA LIBERAR A FINAL TABLE.'):(g?'':'O FLUXO DA FT É LIBERADO AUTOMATICAMENTE QUANDO A ELIMINAÇÃO QUE FORMA A MESA FINAL FOR CONFIRMADA.');authorizedWrap.classList.toggle('hidden',!(snap.authorizedDealers||[]).length);authorizedList.innerHTML=(snap.authorizedDealers||[]).map((d,i)=>`<div class="authorizedRow"><b>DEALER ${i+1}</b> • ${esc(d.name||'DEALER')} • CPF FINAL ${String(d.cpf||'').replace(/\D/g,'').slice(-2).padStart(2,'*')}</div>`).join('');renderModes()}
+timerMode.onclick=()=>{selectedMode='TIMER';renderModes()};manualMode.onclick=()=>{selectedMode='MANUAL';renderModes()};
+clearBtn.onclick=()=>{selectedMode='';dealer1.value=dealer2.value=dealer3.value=managerCpf.value=managerPin.value='';result.textContent='';renderModes()};
+confirmBtn.onclick=()=>{if(!selectedMode){result.textContent='SELECIONE O MODO FINAL TABLE.';return}const r=FinalTableHands.authorizeFinalTable({staff:selectedManager(),mode:selectedMode,managerCpf:managerCpf.value,managerPin:managerPin.value,dealerCredentials:[dealer1.value,dealer2.value,dealer3.value].filter(Boolean)});if(!r.ok){result.textContent=r.error||'NÃO FOI POSSÍVEL AUTORIZAR A FINAL TABLE.';return}result.textContent=r.mode==='TIMER'?'FINAL TABLE LIBERADA COM TEMPORIZADOR.':`${r.dealers.length} DEALER(S) AUTORIZADO(S) PARA A FINAL TABLE.`;managerCpf.value=managerPin.value='';render()};
+window.onPokerStateChange=render;FinalTableHands.ensure();render();
+</script>
+<script src="floor-station-controls.js?v=d901e25b"></script>
+</body>
+</html>

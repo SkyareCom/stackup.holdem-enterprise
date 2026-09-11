@@ -1,0 +1,53 @@
+(()=>{
+'use strict';
+const api=window.StackupScreenMessages;if(!api)return;
+const REGISTRATION_IDS=new Set(['lastRebuy','lastEntry','lastRebuyEntry']);
+const groups=[
+{id:'welcome',title:'BOAS VINDAS',ids:['welcome']},
+{id:'levelStart',title:'INÍCIO DE NÍVEIS',ids:['levelAnte','levelNoAnte','lastEntry','lastRebuy','lastRebuyEntry']},
+{id:'levelEnd',title:'TÉRMINO DE NÍVEIS',ids:['level3','level1','lastEntry','lastRebuy','lastRebuyEntry']},
+{id:'breakStart',title:'INÍCIO DE INTERVALOS',ids:['break','meal','addon']},
+{id:'breakEnd',title:'TÉRMINO DE INTERVALOS',ids:['resume']},
+{id:'extrasAuto',title:'EXTRAS AUTOMÁTICAS',ids:['bubble','h4h','itm','ftBubble','ft','alternate']},
+{id:'extrasManual',title:'EXTRAS NÃO AUTOMÁTICAS',ids:['deal']}
+];
+function createManager(hostId,kind,footerId){
+ const host=document.getElementById(hostId);if(!host)return null;
+ const footerHost=footerId?document.getElementById(footerId):null;
+ const state={groups:Object.fromEntries(groups.map(g=>[g.id,{open:false,modes:Object.fromEntries(g.ids.map(id=>[id,REGISTRATION_IDS.has(id)?'noalert':'alert']))}])),showActive:false,editActive:false,selectedActive:new Set()};
+ const cfg=()=>api.load();
+ const lang=()=>cfg().voiceLang||api.officialLang();
+ function eventName(){try{return window.state?.tournamentName||JSON.parse(localStorage.getItem('poker-club-state-v4')||'{}').tournamentName||'EVENTO'}catch(_){return'EVENTO'}}
+ function textFor(id){if(id==='welcome'&&lang()==='pt')return `Bem vindos jogadores ao ${eventName()}. Excelente jogo a todos !!!`;return api.messageText(id,lang())}
+ const labelFor=id=>api.PT.find(r=>r[0]===id)?.[1]||id;
+ const rowsFor=g=>g.ids.map(id=>api.PT.find(r=>r[0]===id)).filter(Boolean);
+ const forcedNoAlert=id=>kind==='spoken'&&REGISTRATION_IDS.has(id);
+ const openGroupId=()=>groups.find(g=>state.groups[g.id].open)?.id||null;
+ function closeGroup(id){if(state.groups[id])state.groups[id].open=false}
+ function chooseGroup(id){const current=openGroupId();if(current&&current!==id)return;const next=!state.groups[id].open;groups.forEach(g=>{state.groups[g.id].open=false});state.groups[id].open=next;render()}
+ function setMode(g,id,mode){if(forcedNoAlert(id))state.groups[g].modes[id]='noalert';else state.groups[g].modes[id]=mode;render()}
+ function test(g,id){const c=cfg(),l=lang(),mode=state.groups[g].modes[id]||'alert';if(kind==='spoken'){const opt={lang:l,profileId:c.voiceProfile,repeat:c.voiceRepeat,volume:c.voiceVolume/100};if(mode==='noalert'||forcedNoAlert(id))api.speak(textFor(id),opt);else api.playAlertThenSpeak(textFor(id),opt)}else api.setAnnouncement(textFor(id))}
+ function confirm(g,id){const mode=forcedNoAlert(id)?'noalert':(state.groups[g].modes[id]||'alert');api.toggle(kind,id,true);if(kind==='spoken'&&api.setSpokenNoAlert)api.setSpokenNoAlert(id,mode==='noalert');closeGroup(g);render()}
+ function toggleSelected(id){if(state.selectedActive.has(id))state.selectedActive.delete(id);else state.selectedActive.add(id);render()}
+ function removeSelected(){const ids=[...state.selectedActive];if(!ids.length)return;ids.forEach(id=>api.toggle(kind,id,false));state.selectedActive.clear();state.editActive=false;render()}
+ function messageControls(g,id){if(kind!=='spoken')return `<div class="msgPerActions textActions"><button type="button" data-action="test" data-group="${g}" data-id="${id}">TESTAR MENSAGEM</button><button type="button" data-action="confirm" data-group="${g}" data-id="${id}">CONFIRMAR ATIVAÇÃO</button></div>`;
+ const forced=forcedNoAlert(id),mode=state.groups[g].modes[id]||'alert';
+ return `<div class="msgPerActions"><button type="button" data-action="modeAlert" data-group="${g}" data-id="${id}" class="${mode==='alert'&&!forced?'active':''}" ${forced?'disabled':''}>ATIVAR COM ALERTA</button><button type="button" data-action="modeNoAlert" data-group="${g}" data-id="${id}" class="${mode==='noalert'||forced?'active':''}">ATIVAR SEM ALERTA</button><button type="button" data-action="test" data-group="${g}" data-id="${id}">TESTAR MENSAGEM</button><button type="button" data-action="confirm" data-group="${g}" data-id="${id}">CONFIRMAR ATIVAÇÃO</button></div>`}
+ function messageBlock(r,g,c){const id=r[0],active=!!c[kind]?.[id];return `<div class="msgItem"><div class="msgText"><b>${labelFor(id)}</b><small>${textFor(id)}</small>${forcedNoAlert(id)?'<em>SEMPRE SEM ALERTA</em>':''}${active?'<em>ATIVA</em>':''}</div>${messageControls(g.id,id)}</div>`}
+ function block(g){const s=state.groups[g.id],c=cfg(),rows=rowsFor(g),activeCount=rows.filter(r=>!!c[kind]?.[r[0]]).length,current=openGroupId(),locked=!!current&&current!==g.id;if(!s.open)return `<button type="button" class="msgCategoryButton${locked?' locked':''}" data-category="${g.id}" ${locked?'disabled aria-disabled="true"':''}>${g.title}${activeCount?` • ${activeCount}`:''}</button>`;
+ return `<section class="msgGroup"><button type="button" class="msgCategoryButton active" data-category="${g.id}">${g.title}</button><div class="msgCategoryBody"><div class="msgList">${rows.map(r=>messageBlock(r,g,c)).join('')}</div></div></section>`}
+ function allActiveRows(c){const seen=new Set();return groups.flatMap(g=>rowsFor(g)).filter(r=>{const id=r[0];if(seen.has(id)||!c[kind]?.[id])return false;seen.add(id);return true})}
+ function activeFooter(c){const rows=allActiveRows(c),count=rows.length;if(!state.showActive)return `<div class="activeFooter"><button type="button" class="activeMessagesButton" data-action="toggleActive">MENSAGENS ATIVAS${count?` • ${count}`:''}</button></div>`;
+ const list=count?rows.map(r=>{const id=r[0],checked=state.selectedActive.has(id);return `<div class="activeRow ${state.editActive?'editing':''}">${state.editActive?`<label class="activeSelect" aria-label="SELECIONAR ${labelFor(id)}"><input type="checkbox" data-action="toggleSelected" data-id="${id}" ${checked?'checked':''}><span></span></label>`:''}<div class="msgText"><b>${labelFor(id)}</b><small>${textFor(id)}</small></div></div>`}).join(''):'<div class="msgEmpty">NENHUMA MENSAGEM ATIVA.</div>';
+ const selectedCount=state.selectedActive.size;
+ const editControls=count?`<div class="activeEditControls"><button type="button" class="editActiveButton ${state.editActive?'active':''}" data-action="toggleEdit">${state.editActive?'CONCLUIR EDIÇÃO':'EDITAR'}</button>${state.editActive?`<button type="button" class="deleteSelectedButton" data-action="removeSelected" ${selectedCount?'':'disabled'}>APAGAR${selectedCount?` • ${selectedCount}`:''}</button>`:''}</div>`:'';
+ return `<div class="activeFooter"><button type="button" class="activeMessagesButton active" data-action="toggleActive">MENSAGENS ATIVAS${count?` • ${count}`:''}</button><div class="activeList">${list}${editControls}</div></div>`}
+ function handleAction(b,e){e.stopPropagation();const a=b.dataset.action,g=b.dataset.group,id=b.dataset.id;if(a==='modeAlert')setMode(g,id,'alert');else if(a==='modeNoAlert')setMode(g,id,'noalert');else if(a==='test')test(g,id);else if(a==='confirm')confirm(g,id);else if(a==='toggleActive'){state.showActive=!state.showActive;if(!state.showActive){state.editActive=false;state.selectedActive.clear()}render()}else if(a==='toggleEdit'){state.editActive=!state.editActive;if(!state.editActive)state.selectedActive.clear();render()}else if(a==='toggleSelected')toggleSelected(id);else if(a==='removeSelected')removeSelected()}
+ function bindRoot(root){if(!root)return;root.querySelectorAll('[data-category]').forEach(b=>b.onclick=()=>chooseGroup(b.dataset.category));root.querySelectorAll('[data-action]').forEach(b=>b.onclick=e=>handleAction(b,e))}
+ function render(){const c=cfg();host.innerHTML=groups.map(block).join('');if(footerHost)footerHost.innerHTML=activeFooter(c);else host.insertAdjacentHTML('beforeend',activeFooter(c));bindRoot(host);bindRoot(footerHost)}
+ render();return{render};
+}
+const style=document.createElement('style');style.textContent=`#spokenMessages,#writtenMessages{display:grid;gap:8px}.msgGroup{border:0!important;background:transparent!important;padding:0!important}.msgCategoryButton{width:100%!important;text-align:left!important;padding:12px!important}.msgCategoryButton.active,.activeMessagesButton.active,.editActiveButton.active{background:#8DFC3B!important;color:#020302!important;border-color:#8DFC3B!important}.msgCategoryButton.locked,.msgCategoryButton:disabled.locked{opacity:.32!important;filter:saturate(.35)!important;cursor:not-allowed!important;pointer-events:none!important}.msgCategoryBody{padding:10px 0 14px}.msgList{display:grid;gap:14px}.msgItem{padding:10px 0 14px;border:0!important;border-bottom:1px solid #18201B!important}.msgItem:last-child{border-bottom:0!important}.msgText{display:grid;gap:4px}.msgText b{color:#fff!important}.msgText small{color:#AEB8B1!important;line-height:1.35!important;font-weight:300!important}.msgText em{font-style:normal;color:#8DFC3B!important;font-weight:400!important}.msgPerActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.msgPerActions button.active{background:#8DFC3B!important;color:#020302!important;border-color:#8DFC3B!important}.pageActiveFooter{margin-top:22px}.activeFooter{margin-top:0;padding-top:6px}.activeMessagesButton,.editActiveButton,.deleteSelectedButton{width:100%!important;margin-top:0!important}.activeList{display:grid;gap:8px;margin-top:10px}.activeRow{display:grid;grid-template-columns:1fr;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #18201B}.activeRow.editing{grid-template-columns:auto 1fr}.activeRow:last-of-type{border-bottom:0}.activeSelect{display:flex;align-items:center;justify-content:center;cursor:pointer}.activeSelect input{position:absolute;opacity:0;pointer-events:none}.activeSelect span{width:22px;height:22px;border:1px solid #6D786F;border-radius:4px;background:#020302;box-sizing:border-box;display:block;position:relative}.activeSelect input:checked+span{border-color:#8DFC3B;background:#8DFC3B}.activeSelect input:checked+span:after{content:'✓';position:absolute;inset:0;display:grid;place-items:center;color:#020302;font-size:15px;font-weight:700}.activeEditControls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.deleteSelectedButton:disabled{opacity:.45;cursor:not-allowed}.msgEmpty{color:#AEB8B1!important;padding:8px 2px}@media(max-width:700px){.msgPerActions,.activeEditControls{grid-template-columns:1fr}}`;document.head.appendChild(style);
+const managers=[createManager('spokenMessages','spoken','spokenActiveFooter'),createManager('writtenMessages','written')].filter(Boolean);
+window.addEventListener('stackup-screen-message-config',()=>managers.forEach(m=>m.render()));
+})();

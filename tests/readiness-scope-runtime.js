@@ -1,0 +1,13 @@
+const fs=require('fs');
+const vm=require('vm');
+const sandbox={console,location:{pathname:'/tournament-readiness.html'},setInterval,clearInterval};
+sandbox.window=sandbox;
+sandbox.state={eventId:'event-A',activeEnvironmentId:'club-A',clubId:'club-A',players:[{id:'a',validationEventId:'event-A'},{id:'b',validationEventId:'event-B'}],balancePlan:[{id:'pa',eventId:'event-A'},{id:'pb',eventId:'event-B'}],staffUsers:[{id:'sa',clubId:'club-A'},{id:'sb',clubId:'club-B'}],authMemberships:[{id:'ma',clubId:'club-A',personId:'person-a'},{id:'mb',clubId:'club-B',personId:'person-b'}],authPeople:[{id:'person-a'},{id:'person-b'}]};
+sandbox.currentTournamentPlayers=()=>sandbox.state.players.filter(p=>String(p.validationEventId||p.eventId||'')===String(sandbox.state.eventId||''));
+sandbox.StackupAuth={current:()=>({clubId:'club-A'})};
+let captured=null,rendered=0;
+sandbox.buildAudit=function(){captured={players:sandbox.state.players.map(x=>x.id),plans:sandbox.state.balancePlan.map(x=>x.id),staff:sandbox.state.staffUsers.map(x=>x.id),memberships:sandbox.state.authMemberships.map(x=>x.id),people:sandbox.state.authPeople.map(x=>x.id)};return captured};
+sandbox.render=function(){rendered++;sandbox.buildAudit()};
+const originals={players:sandbox.state.players,balancePlan:sandbox.state.balancePlan,staffUsers:sandbox.state.staffUsers,authMemberships:sandbox.state.authMemberships,authPeople:sandbox.state.authPeople};
+vm.createContext(sandbox);
+try{vm.runInContext(fs.readFileSync('tournament-readiness-scope-v1.js','utf8'),sandbox,{filename:'tournament-readiness-scope-v1.js'});const assert=(n,c)=>{if(!c)throw new Error('FAIL: '+n);console.log('PASS:',n)};assert('PATCH REEXECUTA AUDITORIA',rendered>0);assert('READINESS VÊ SÓ JOGADORES DO EVENTO',captured.players.join(',')==='a');assert('READINESS VÊ SÓ BALANCING DO EVENTO',captured.plans.join(',')==='pa');assert('READINESS VÊ SÓ STAFF DO AMBIENTE',captured.staff.join(',')==='sa');assert('READINESS VÊ SÓ VÍNCULOS DO AMBIENTE',captured.memberships.join(',')==='ma');assert('READINESS VÊ SÓ PESSOAS DOS VÍNCULOS DO AMBIENTE',captured.people.join(',')==='person-a');assert('PATCH RESTAURA ESTADO GLOBAL APÓS AUDITORIA',sandbox.state.players===originals.players&&sandbox.state.balancePlan===originals.balancePlan&&sandbox.state.staffUsers===originals.staffUsers&&sandbox.state.authMemberships===originals.authMemberships&&sandbox.state.authPeople===originals.authPeople);console.log('READINESS SCOPE RUNTIME PASS')}catch(e){console.error(e.stack||e);process.exit(1)}

@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Caacupe+One:wght@400&display=swap');
+
+:root{
+  --su-bg:#020302;
+  --su-green:#8DFC3B;
+  --su-white:#FFFFFF;
+  --su-field:#060907;
+  --su-card-top:#0B100D;
+  --su-card-bottom:#060907;
+  --su-border:#27342D;
+  --su-secondary:#AEB8B1;
+  --su-description:#9CA69F;
+  --su-radius:9px;
+  --su-gap:8px;
+  --su-section-gap:18px;
+  --su-control-h:44px;
+  --su-page:980px;
+}
+
+html,body{background:var(--su-bg)!important;color:var(--su-white)!important}
+html:root body,
+html:root body *,
+html:root body *::before,
+html:root body *::after,
+html:root body button,
+html:root body input,
+html:root body select,
+html:root body textarea,
+html:root body option,
+html:root body label,
+html:root body a,
+html:root body [role="button"],
+html:root body input::placeholder,
+html:root body textarea::placeholder{
+  font-family:'Caacupe One',system-ui,sans-serif!important;
+  font-style:normal!important;
+  font-weight:300!important;
+  text-transform:uppercase!important;
+}
+body{font-size:14px!important;font-weight:300!important}
+
+main.app,main.wrap,.app,.wrap,.container,.shell,.page,.page-shell,.app-shell,.content-shell,.layout-shell,.screen-shell,.section-shell,.section-wrap,.panel-shell,.panel-wrap,.form-shell,.form-wrap{
+  width:100%!important;max-width:var(--su-page)!important;margin-left:auto!important;margin-right:auto!important;
+  background:transparent!important;border:0!important;border-radius:0!important;outline:0!important;box-shadow:none!important;
+}
+main.app,main.wrap,.app,.wrap{padding:18px!important}
+main.app>.card:not(a):not(button),main.wrap>.card:not(a):not(button),main.app>.panel:not(a):not(button),main.wrap>.panel:not(a):not(button){
+  background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:0!important;
+}
+
+h1,h2,h3,h4,h5,h6,.title,.page-title,.section,.section-title,.ey,strong,b,th,label,button,.primary,.badge{font-weight:300!important}
+h1,.page-title,.hero-title,.display-title{font-size:25px!important}
+h2,.title,.card-title{font-size:18px!important}
+h3,.section,.section-title,.subtitle{font-size:16px!important}
+h4,h5,h6,strong,b,th,label,button,.primary,.badge,input,select,textarea,option,p,span,a,li,td,small,.meta,.desc,.description,.value,.name,.tag,.ey,.status{font-size:14px!important}
+
+input:not([type="checkbox"]):not([type="radio"]),select,textarea{min-height:var(--su-control-h)!important;border:1px solid var(--su-border)!important;border-radius:var(--su-radius)!important;background:linear-gradient(var(--su-card-top),var(--su-card-bottom))!important;color:var(--su-secondary)!important;padding:10px!important;box-shadow:none!important;outline:none!important;font-size:14px!important;font-weight:300!important}
+button,.btn,.button,a.btn,a.button,[role="button"],input[type="button"],input[type="submit"],input[type="reset"]{min-height:var(--su-control-h)!important;border:1px solid var(--su-green)!important;border-radius:var(--su-radius)!important;background:linear-gradient(var(--su-card-top),var(--su-card-bottom))!important;color:var(--su-green)!important;text-decoration:none!important;box-shadow:none!important;font-family:'Caacupe One',system-ui,sans-serif!important;font-weight:300!important;font-size:14px!important}
+
+.check,.tile,[class$="-card"]{background:linear-gradient(var(--su-card-top),var(--su-card-bottom))!important;border:1px solid var(--su-border)!important;border-radius:var(--su-radius)!important;box-shadow:none!important}
+.check,.check *,.tile,.tile *,[class$="-card"],[class$="-card"] *,[class~="card"],[class~="card"] *{font-family:'Caacupe One',system-ui,sans-serif!important;font-weight:300!important}
+.card-title,[class$="-card"] .card-title,[class~="card"] .card-title{font-size:18px!important}
+
+.grid,.grid2,.grid3,.filters,.checks,.actions,.cards,.items,.payGrid,.idGrid,.tables{gap:var(--su-gap)!important}
+.section,.section-title{margin-top:var(--su-section-gap)!important;margin-bottom:var(--su-gap)!important;color:var(--su-green)!important}
+
+@media(max-width:700px){main.app,main.wrap,.app,.wrap{width:100%!important;max-width:100%!important;padding-left:12px!important;padding-right:12px!important}.grid,.grid2,.grid3,.filters{grid-template-columns:minmax(0,1fr)!important}.actions{display:flex!important;flex-wrap:wrap!important}input:not([type="checkbox"]):not([type="radio"]),select,textarea,button{width:100%!important}}

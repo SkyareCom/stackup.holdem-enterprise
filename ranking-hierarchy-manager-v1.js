@@ -1,0 +1,11 @@
+(()=>{
+'use strict';
+if((location.pathname.split('/').pop()||'').toLowerCase()!=='tournament-manager.html')return;
+function meta(id){return state.rankingStageMeta?.[String(id||'')]||{}}
+function saved(id){return(state.savedTournaments||[]).find(x=>String(x.id||'')===String(id||''))||null}
+function labelFor(id){const m=meta(id),s=saved(id),d=s?.data||{},tour=m.tournamentName||d.rankingTournamentName||d.tournamentName||s?.name||state.tournamentName||'TORNEIO',stage=m.stageName||d.stageName||((String(id)===String(state.eventId||''))?state.stageName:'')||'ETAPA ÚNICA';return`${tour} • ${stage}`}
+function syncActive(){const id=String(state.eventId||'');if(!id)return;const m=meta(id),s=saved(id),d=s?.data||{};state.stageName=m.stageName||d.stageName||state.stageName||'ETAPA ÚNICA';state.rankingTournamentId=m.tournamentId||d.rankingTournamentId||state.rankingTournamentId||'';state.rankingTournamentName=m.tournamentName||d.rankingTournamentName||d.tournamentName||state.rankingTournamentName||state.tournamentName||'';try{saveState()}catch(_){}}
+function decorate(){document.querySelectorAll('.tournamentChoice[data-id]').forEach(b=>{const id=b.dataset.id,active=String(id)===String(state.eventId||'')&&state.prepared,text=labelFor(id)+(active?' • ATIVO':'');if(b.textContent!==text)b.textContent=text});for(const [host,active] of [[document.getElementById('selected'),false],[document.getElementById('current'),true]]){if(!host)continue;const metaEl=host.querySelector('.meta');if(!metaEl)continue;const m=metaEl.textContent.match(/ID\s+([^\s]+)/i);const id=m?.[1]||(!active?'':state.eventId);if(!id)continue;const nameEl=host.querySelector(active?'.activeName':'.name');if(nameEl){const text=labelFor(id);if(nameEl.textContent!==text)nameEl.textContent=text}}}
+function boot(){syncActive();decorate();document.addEventListener('click',e=>{if(e.target.closest('#confirmAction'))setTimeout(()=>{syncActive();decorate()},20);if(e.target.closest('.tournamentChoice,[data-action]'))setTimeout(decorate,20)},true);new MutationObserver(decorate).observe(document.body,{childList:true,subtree:true})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();

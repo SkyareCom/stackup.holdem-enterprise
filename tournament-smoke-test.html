@@ -1,0 +1,60 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>SMOKE TEST • TORNEIOS</title><link rel="stylesheet" href="app-theme.css"><style>:root{--bg:#020302;--panel:#0a0f0c;--line:#26342c;--green:#9cff4b;--amber:#f3c64e;--red:#ff6069;--muted:#9ca69f}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff}.app{max-width:860px;margin:auto;padding:16px}.ey{font-size:9px;color:var(--green);font-weight:950;letter-spacing:.16em}.title{font-size:28px;font-weight:950;margin:4px 0 14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:10px}.hero{text-align:center;padding:20px}.score{font-size:52px;font-weight:950}.meta{font-size:10px;color:var(--muted);line-height:1.5}.row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #1d2721}.row:last-child{border:0}.ok{color:var(--green)}.bad{color:var(--red)}.warn{color:var(--amber)}.badge{font-size:8px;font-weight:950;border:1px solid #3a4b41;border-radius:999px;padding:4px 7px}button{width:100%;padding:11px;border-radius:10px;border:1px solid #34463b;background:#0c130f;color:#fff;font-weight:950}.primary{background:var(--green);color:#071005;border-color:var(--green)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}@media(max-width:620px){.grid{grid-template-columns:1fr}.title{font-size:22px}}</style></head><body><main class="app"><div class="ey">TOURNAMENT QA • ISOLATED STATE</div><div class="title">SMOKE TEST DO CICLO DE TORNEIO</div><div class="card hero"><div class="meta">ESTE TESTE USA UM ESTADO TEMPORÁRIO EM MEMÓRIA E RESTAURA O EVENTO REAL AO FINAL.</div><div class="score" id="score">—</div><div id="summary" class="meta"></div></div><div class="grid"><button class="primary" id="run">EXECUTAR TESTE COMPLETO</button><button onclick="location.href='tournament-readiness.html'">VOLTAR À PRONTIDÃO</button></div><div class="card" id="results"><div class="meta">PRONTO PARA EXECUTAR.</div></div></main><script src="shared.js"></script><script src="validation.js"></script><script src="operations.js"></script><script src="tournament-engine.js"></script><script src="timer-engine.js"></script><script>
+const TD={id:'qa-td',name:'QA TD',role:'TD',active:true};const DEALER={id:'qa-dealer',name:'QA DEALER',role:'DEALER',active:true};
+function fresh(extra={}){state={...clone(DEFAULT_STATE),eventId:'qa-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),tournamentName:'QA TOURNAMENT',clubName:'QA CLUB',staffUsers:[TD,DEALER],players:[],transactions:[],auditLog:[],messageQueue:[],messageLog:[],staffAlerts:[],botCommands:[],balancePlan:[],tableMovements:[],seatCheckins:[],validationLog:[],...extra};ensureOperationalState();ValidationCodes.ensureValidationState();PokerOperations.ensure();TournamentTimer.ensure();return state}
+function assert(name,condition,detail=''){if(!condition)throw new Error(`${name}${detail?' • '+detail:''}`);return{name,ok:true,detail}}
+function register(name,staff=TD){const r=PokerOperations.registerTournamentPlayer({name,transactionalConsent:false,marketingConsent:false,staff,source:'QA'});if(!r.ok)throw new Error(`REGISTRO ${name}: ${r.error}`);return r.player}
+function runTests(){const rows=[];const backup=clone(state),realSave=saveState;saveState=()=>{};try{
+  fresh({tournamentFormat:'REGULAR',buyin:500,fee:50,seatsPerTable:9});
+  const r1=register('ALFA');
+  rows.push(assert('REGISTRO + BUY-IN',state.players.length===1&&state.transactions.filter(t=>t.type==='ENTRY').length===1));
+  rows.push(assert('LEDGER CLASSIFICADO',state.transactions[0].breakdown?.classification==='CLASSIFIED'&&state.transactions[0].value===550));
+  const dup=PokerOperations.addTournamentTransaction({playerId:r1.id,type:'ENTRY',staff:TD,source:'QA'});
+  rows.push(assert('BLOQUEIO DE BUY-IN DUPLICADO',dup.ok===false&&dup.code==='DUPLICATE_ENTRY'));
+
+  fresh({tournamentFormat:'PKO',bountyValue:100,bountyOnReentry:true,pkoCashPercent:50,buyin:500,fee:50,reentryValue:500,seatsPerTable:9});
+  const a=register('ALFA'),b=register('BRAVO'),c=register('CHARLIE');
+  PokerOperations.confirmSeat({playerId:a.id,staff:DEALER,source:'QA'});PokerOperations.confirmSeat({playerId:b.id,staff:DEALER,source:'QA'});PokerOperations.confirmSeat({playerId:c.id,staff:DEALER,source:'QA'});
+  rows.push(assert('PRESENÇA / SEATED',state.seatCheckins.filter(x=>x.status==='SEATED').length===3));
+  const ko1=PokerOperations.eliminatePlayer({playerId:b.id,killerId:a.id,staff:DEALER,source:'QA'});
+  rows.push(assert('PKO KNOCKOUT ATÔMICO',ko1.ok&&ko1.bounty&&b.status==='eliminated'));
+  rows.push(assert('PKO SPLIT 50/50',Math.abs(ko1.bounty.paid-50)<.01&&Math.abs(ko1.bounty.carry-50)<.01));
+  rows.push(assert('BOUNTY PROGRESSIVO DO KILLER',Math.abs(a.currentBounty-150)<.01));
+  rows.push(assert('BOUNTY DA VÍTIMA ZERADO',b.currentBounty===0));
+  const dupeBounty=PokerOperations.awardBounty({winnerId:a.id,eliminatedId:b.id,staff:DEALER,source:'QA'});
+  rows.push(assert('BLOQUEIO DE BOUNTY DUPLICADO',dupeBounty.ok===false&&dupeBounty.code==='DUPLICATE_BOUNTY'));
+  const re1=PokerOperations.reenterPlayer({playerId:b.id,staff:TD,source:'QA'});
+  rows.push(assert('REENTRADA COM NOVO BOUNTY',re1.ok&&b.currentBounty===100&&re1.transaction.value===600));
+  PokerOperations.confirmSeat({playerId:b.id,staff:DEALER,source:'QA'});
+  const ko2=PokerOperations.eliminatePlayer({playerId:b.id,killerId:a.id,staff:DEALER,source:'QA'});
+  rows.push(assert('SEGUNDO KO APÓS REENTRADA',ko2.ok&&state.transactions.filter(t=>t.type==='BOUNTY_PAYOUT'&&t.eliminatedPlayerId===b.id).length===2));
+  state.bountyOnReentry=false;
+  const re2=PokerOperations.reenterPlayer({playerId:b.id,staff:TD,source:'QA'});
+  rows.push(assert('REENTRADA SEM NOVO BOUNTY',re2.ok&&b.currentBounty===0&&re2.transaction.value===500));
+  PokerOperations.confirmSeat({playerId:b.id,staff:DEALER,source:'QA'});
+  const noBountyKo=PokerOperations.eliminatePlayer({playerId:b.id,staff:DEALER,source:'QA'});
+  rows.push(assert('KO SEM KILLER QUANDO BOUNTY = 0',noBountyKo.ok&&!noBountyKo.bounty));
+
+  fresh({tournamentFormat:'REGULAR',seatsPerTable:6});
+  for(let i=1;i<=7;i++)register('P'+i);
+  const plan=recomputeBalancePlan();
+  rows.push(assert('BALANCING GERADO',plan.length>0));
+  const applied=PokerOperations.applyBalancePlan({source:'QA'});
+  rows.push(assert('BALANCING APLICADO',applied.ok&&applied.count>0));
+  rows.push(assert('DESTINO EXIGE NOVO CHECK-IN',state.tableMovements.some(m=>m.status==='AWAITING_DESTINATION_CHECKIN')));
+
+  fresh({structure:[{type:'level',label:'NÍVEL 1',duration:60,sb:100,bb:200,ante:200},{type:'break',label:'BREAK',duration:30},{type:'level',label:'NÍVEL 2',duration:60,sb:200,bb:400,ante:400}],remaining:60,elapsed:0,levelIndex:0,running:false});
+  TournamentTimer.ensure();TournamentTimer.setRunning(true);const now=Date.now()+95*1000;const advanced=TournamentTimer.advanceIfNeeded(now);
+  rows.push(assert('TIMER RECUPERA MÚLTIPLAS ETAPAS',advanced.levelIndex===2&&advanced.remaining===55,`IDX ${advanced.levelIndex} / ${advanced.remaining}s`));
+  rows.push(assert('TIMER ELAPSED COERENTE',advanced.elapsed>=95));
+
+  fresh({tournamentFormat:'BOUNTY',bountyValue:100,bountyOnReentry:false});
+  const x=register('X'),y=register('Y');PokerOperations.confirmSeat({playerId:x.id,staff:DEALER,source:'QA'});PokerOperations.confirmSeat({playerId:y.id,staff:DEALER,source:'QA'});
+  const miss=PokerOperations.eliminatePlayer({playerId:y.id,staff:DEALER,source:'QA'});
+  rows.push(assert('BOUNTY ATIVO EXIGE KILLER',miss.ok===false&&miss.code==='KILLER_REQUIRED'));
+
+  const passed=rows.filter(r=>r.ok).length;score.textContent=`${passed}/${rows.length}`;score.className='score '+(passed===rows.length?'ok':'bad');summary.textContent=passed===rows.length?'TODOS OS TESTES AUTOMÁTICOS PASSARAM.':'HÁ FALHAS NO CICLO AUTOMÁTICO.';results.innerHTML=rows.map(r=>`<div class="row"><div class="ok">✓</div><div><b>${r.name}</b><div class="meta">${r.detail||'OK'}</div></div><div class="badge">PASS</div></div>`).join('');
+ }catch(e){score.textContent='FALHA';score.className='score bad';summary.textContent=e.message;results.innerHTML+=`<div class="row"><div class="bad">×</div><div><b>ERRO DE SMOKE TEST</b><div class="meta">${e.message}</div></div><div class="badge">FAIL</div></div>`}
+ finally{state=backup;saveState=realSave;}
+}
+run.onclick=runTests;runTests();
+</script></body></html>

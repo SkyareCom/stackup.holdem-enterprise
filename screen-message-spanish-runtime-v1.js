@@ -1,0 +1,16 @@
+(()=>{
+'use strict';
+const ES={
+'WELCOME':'BIENVENIDA','START OF LEVELS':'INICIO DE NIVELES','END OF LEVELS':'FIN DE NIVELES','START OF BREAKS':'INICIO DE DESCANSOS','END OF BREAKS':'FIN DE DESCANSOS','AUTOMATIC EXTRAS':'EXTRAS AUTOMÁTICOS','MANUAL EXTRAS':'EXTRAS MANUALES','ACTIVE MESSAGES':'MENSAJES ACTIVOS','NO ACTIVE MESSAGES.':'NO HAY MENSAJES ACTIVOS.','EDIT':'EDITAR','FINISH EDITING':'FINALIZAR EDICIÓN','DELETE':'ELIMINAR','ENABLE WITH ALERT':'ACTIVAR CON ALERTA','ENABLE WITHOUT ALERT':'ACTIVAR SIN ALERTA','TEST MESSAGE':'PROBAR MENSAJE','CONFIRM ACTIVATION':'CONFIRMAR ACTIVACIÓN','ACTIVE':'ACTIVA',
+'OPENING':'APERTURA','DEALERS — DEAL CARDS':'DEALERS — REPARTIR CARTAS','NEW LEVEL IN 3 MIN':'NUEVO NIVEL EN 3 MIN','NEW LEVEL IN 1 MIN':'NUEVO NIVEL EN 1 MIN','NEW LEVEL + ANTE':'NUEVO NIVEL + ANTE','NEW LEVEL WITHOUT ANTE':'NUEVO NIVEL SIN ANTE','LAST LEVEL FOR REBUYS':'ÚLTIMO NIVEL PARA REBUYS','LAST LEVEL FOR ENTRIES AND RE-ENTRIES':'ÚLTIMO NIVEL PARA ENTRADAS Y REENTRADAS','LAST LEVEL FOR ENTRIES, RE-ENTRIES AND REBUYS':'ÚLTIMO NIVEL PARA ENTRADAS, REENTRADAS Y REBUYS','BREAK':'DESCANSO','MEAL BREAK':'DESCANSO PARA COMER','ADD-ON BREAK':'DESCANSO PARA ADD-ON','RETURN FROM BREAK':'REGRESO DEL DESCANSO','MONEY BUBBLE':'BURBUJA DE PREMIOS','FINAL TABLE BUBBLE':'BURBUJA DE MESA FINAL','FINAL TABLE':'MESA FINAL',
+'VOICE SELECTION':'SELECCIÓN DE VOZ','MALE':'MASCULINA','FEMALE':'FEMENINA','MESSAGES':'MENSAJES','TEXT MESSAGES':'MENSAJES DE TEXTO','CUSTOM MESSAGE':'MENSAJE PERSONALIZADO','MESSAGE':'MENSAJE','WHEN TO DISPLAY?':'¿CUÁNDO MOSTRAR?','NOW':'AHORA','DEFINED MOMENT':'MOMENTO DEFINIDO','MOMENT':'MOMENTO','DISPLAY NOW':'MOSTRAR AHORA','ENABLE SCHEDULE':'ACTIVAR PROGRAMACIÓN','BACK TO ALERTS AND MESSAGES':'VOLVER A ALERTAS Y MENSAJES'
+};
+const roots=()=>['spokenMessages','writtenMessages','spokenActiveFooter'].map(id=>document.getElementById(id)).filter(Boolean);
+const lang=()=>String(window.StackupScreenMessages?.officialLang?.()||window.state?.language||'pt').slice(0,2);
+let busy=false;
+function translateNode(root){if(lang()!=='es'||!root)return;root.setAttribute('translate','no');root.querySelectorAll('*').forEach(el=>el.setAttribute('translate','no'));const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);for(const n of nodes){const raw=n.nodeValue||'',trim=raw.trim(),mapped=ES[trim.toUpperCase()];if(mapped)n.nodeValue=raw.replace(trim,mapped)}}
+function apply(){if(busy)return;busy=true;try{roots().forEach(translateNode);if(lang()==='es'){document.documentElement.lang='es';document.querySelectorAll('#voiceMale,#voiceFemale').forEach(el=>{const key=(el.textContent||'').trim().toUpperCase();if(ES[key])el.textContent=ES[key];el.setAttribute('translate','no')})}}finally{busy=false}}
+const observer=new MutationObserver(()=>queueMicrotask(apply));
+function start(){apply();roots().forEach(r=>observer.observe(r,{subtree:true,childList:true,characterData:true}));window.addEventListener('stackup-screen-message-config',()=>setTimeout(apply,0));window.addEventListener('stackup-language-change',()=>setTimeout(apply,0));setTimeout(apply,50);setTimeout(apply,250);setTimeout(apply,800)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();

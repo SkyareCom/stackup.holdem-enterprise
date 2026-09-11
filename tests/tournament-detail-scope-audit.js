@@ -1,0 +1,22 @@
+const fs=require('fs');
+const failures=[];
+const read=f=>fs.readFileSync(f,'utf8');
+const ok=(name,cond)=>{if(cond)console.log('PASS:',name);else failures.push(name)};
+const shared=read('shared.js');
+ok('Shared exige eventId ativo para lista operacional',shared.includes("function currentTournamentPlayers(){const event=String(state.eventId||'');if(!event)return[]"));
+ok('Shared não aceita jogador operacional sem vínculo de evento',shared.includes('return state.players.filter(p=>playerEventId(p)===event)'));
+ok('Contadores não usam transações sem torneio ativo',shared.includes("tx=event?state.transactions.filter(t=>String(t.eventId||'')===event):[]"));
+const active=read('tournament-active-players.html');
+ok('Detalhe ATIVOS usa apenas currentTournamentPlayers',active.includes('currentTournamentPlayers().filter')&&!active.includes('(state.players||[]).filter'));
+const eliminated=read('tournament-eliminated-players.html');
+ok('Detalhe ELIMINADOS usa apenas currentTournamentPlayers',eliminated.includes('currentTournamentPlayers().filter')&&!eliminated.includes('(state.players||[]).filter'));
+const tables=read('tournament-tables.html');
+ok('Detalhe MESAS usa apenas currentTournamentPlayers',tables.includes('for(const p of currentTournamentPlayers())')&&!tables.includes('for(const p of(state.players||[]))'));
+const transactions=read('tournament-player-transactions.html');
+ok('Detalhe TRANSAÇÕES filtra eventId exato',transactions.includes("String(t.eventId||'')===String(state.eventId||'')"));
+ok('Detalhe TRANSAÇÕES resolve jogador dentro do evento',transactions.includes('return currentTournamentPlayers().find'));
+const center=read('tournament-center.html');
+ok('Central usa helper canônico de jogadores do evento',center.includes('function currentPlayers(){return currentTournamentPlayers()}'));
+for(const [name,src] of [['ATIVOS',active],['ELIMINADOS',eliminated],['MESAS',tables],['TRANSAÇÕES',transactions]])ok(`${name}: detalhe exige autenticação equivalente ao controle`,src.includes('auth-engine.js')&&src.includes("StackupAuth.guard('control.html')"));
+if(failures.length){console.error(`TOURNAMENT DETAIL SCOPE AUDIT FAILED: ${failures.length}`);failures.forEach(x=>console.error('- '+x));process.exit(1)}
+console.log('TOURNAMENT DETAIL SCOPE AUDIT PASS');

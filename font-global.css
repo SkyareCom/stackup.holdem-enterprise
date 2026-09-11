@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Caacupe+One:wght@400&display=swap');
+
+html:root body,
+html:root body *,
+html:root body *::before,
+html:root body *::after,
+html:root body button,
+html:root body input,
+html:root body select,
+html:root body textarea,
+html:root body option,
+html:root body label,
+html:root body a,
+html:root body [role="button"],
+html:root body input::placeholder,
+html:root body textarea::placeholder{
+  font-family:'Caacupe One',system-ui,sans-serif!important;
+  font-style:normal!important;
+  font-weight:300!important;
+  letter-spacing:1px!important;
+}

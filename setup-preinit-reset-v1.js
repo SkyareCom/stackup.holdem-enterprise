@@ -1,0 +1,40 @@
+(()=>{
+'use strict';
+if((location.pathname.split('/').pop()||'').toLowerCase()!=='setup.html')return;
+const params=new URLSearchParams(location.search);
+if(params.get('new')!=='1')return;
+const key='poker-club-state-v4';
+const zero=['buyin','buyinChips','earlyBonusValue','earlyBonusChips','rebuyValue','rebuyChips','doubleRebuyValue','doubleRebuyChips','reentryValue','reentryChips','addonValue','addonChips','specialAddonValue','specialAddonChips','addonBonusValue','addonBonusChips','bountyValue','fee','guaranteed','paidPlaces','lateRegLevel','startingStack','prizePool'];
+const blank=['eventId','tournamentName','gameType','tournamentFormat','seatsPerTable','selectedTournamentId','selectedTournamentName','selectedStructureId','selectedStructureName','readyTemplateId','readyTemplateSource'];
+try{
+  const raw=localStorage.getItem(key);
+  if(!raw)return;
+  const saved=JSON.parse(raw);
+  if(!saved||typeof saved!=='object')return;
+  zero.forEach(k=>saved[k]=0);
+  blank.forEach(k=>saved[k]='');
+  saved.bountyRecurring=false;
+  saved.bountyDoubleSecond=false;
+  saved.bountyOnReentry=false;
+  saved.prepared=false;
+  saved.running=false;
+  saved.tournamentStatus='DRAFT';
+  saved.status='DRAFT';
+  saved.levelIndex=0;
+  saved.remaining=0;
+  saved.elapsed=0;
+  saved.startedAt=null;
+  saved.lastTickAt=null;
+  saved.transition=null;
+  saved.structure=[{type:'level',label:'NÍVEL 1',duration:0,sb:0,bb:0,ante:0,identifier:'',levelIdentifier:''}];
+  saved.structureBbAnte=false;
+  saved.structureBbMode=0;
+  saved.structureNoAnte=false;
+  saved.finalTableStructureMode='TIMER';
+  saved.finalTableHandsPerLevel=10;
+  saved.finalTableManualActive=false;
+  saved.finalTableMode='TIMER';
+  saved.newTournamentDraftStartedAt=Date.now();
+  localStorage.setItem(key,JSON.stringify(saved));
+}catch(_){ }
+})();

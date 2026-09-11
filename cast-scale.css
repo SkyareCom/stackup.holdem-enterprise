@@ -1,0 +1,39 @@
+/* STACKUP CAST SCALE
+   Base visual: 1920x1080 (16:9).
+   --cu = 1% of the fitted 16:9 canvas, so mobile landscape and TV keep the same proportions. */
+:root{--cu:min(1vw,1.7777778vh)}
+
+html body .cast .event b{font-size:calc(var(--cu)*1.6667)!important}
+html body .cast .levelTop,html body .cast .levelTop b{font-size:calc(var(--cu)*1.875)!important}
+html body .cast .topStat span,html body .cast .sideStat span,html body .cast .bottomStat span{font-size:calc(var(--cu)*.7292)!important}
+html body .cast .topStat b,html body .cast .sideStat b,html body .cast .bottomStat b{font-size:calc(var(--cu)*.9375)!important}
+html body .cast #currentLevelNo,html body .cast #leftField{font-size:calc(var(--cu)*1.6667)!important}
+
+/* Official CAST clock and blinds */
+html body .cast .clock,html body .cast #time{font-size:calc(var(--cu)*8.8542)!important}
+html body .cast .currentLevelTitle,html body .cast .nextLevelTitle,html body .cast .nextInline small{font-size:calc(var(--cu)*.7292)!important}
+html body .cast .currentInline .sbValue,html body .cast .currentInline .bbValue,html body .cast .currentInline .sep{font-size:calc(var(--cu)*2.0833)!important}
+html body .cast .currentInline .anteValue,html body .cast .currentInline .paren{font-size:calc(var(--cu)*1.5625)!important}
+html body .cast .nextInline .sbValue,html body .cast .nextInline .bbValue,html body .cast .nextInline .sep{font-size:calc(var(--cu)*.9375)!important}
+html body .cast .nextInline .anteValue,html body .cast .nextInline .paren{font-size:calc(var(--cu)*.7292)!important}
+
+/* Final table CAST */
+html body .cast .currentInline b{font-size:calc(var(--cu)*1.9792)!important}
+html body .cast .nextInline b{font-size:calc(var(--cu)*1.5625)!important}
+
+/* Ticker: 26px at 1920x1080, same visual proportion on mobile */
+html body .cast .tickerLogo,html body .cast .tickerSlide span,html body .cast .tickerSlide .idleLogo{font-size:calc(var(--cu)*1.3542)!important}
+html body .cast .tickerSlide .idleLogo::first-letter{font-size:calc(var(--cu)*1.6146)!important}
+
+/* Controls scale from the same base */
+html body .castControls button{font-size:calc(var(--cu)*1.1458)!important;min-width:calc(var(--cu)*14.5833)!important;min-height:calc(var(--cu)*3.75)!important;padding:calc(var(--cu)*.9375) calc(var(--cu)*1.3542)!important}
+html body .enter button{font-size:calc(var(--cu)*2.2396)!important;padding:calc(var(--cu)*1.7708) calc(var(--cu)*2.7083)!important}
+html body .rotate b{font-size:clamp(24px,6vw,43px)!important}
+
+/* Keep structure proportional as well */
+html body .cast .track{height:max(3px,calc(var(--cu)*.3125))!important}
+html body .cast .centerBlock{gap:calc(var(--cu)*.5625)!important}
+html body .cast .blindLine{gap:calc(var(--cu)*.25)!important}
+
+/* Portrait remains a rotate prompt; no alternate typography scale. */
+@media(orientation:portrait){:root{--cu:1vw}}

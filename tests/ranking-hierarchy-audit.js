@@ -1,0 +1,27 @@
+const fs=require('fs');
+const failures=[];
+const read=f=>fs.readFileSync(f,'utf8');
+const ok=(name,cond)=>{if(cond)console.log('PASS:',name);else failures.push(name)};
+const hub=read('ranking.html'),tour=read('ranking-tournament.html'),league=read('ranking-general.html'),rules=read('ranking-rules.html'),engine=read('ranking-engine.js'),setup=read('ranking-hierarchy-setup-v1.js'),snap=read('ranking-snapshot-v1.js'),theme=read('app-theme.js');
+ok('Ranking hub possui card RANKING POR TORNEIOS',hub.includes('RANKING POR TORNEIOS')&&hub.includes('ranking-tournament.html'));
+ok('Ranking hub possui card RANKING POR LIGAS',hub.includes('RANKING POR LIGAS')&&hub.includes('ranking-general.html'));
+ok('Ranking hub possui card CRITÉRIOS E REGRAS',hub.includes('CRITÉRIOS E REGRAS')&&hub.includes('ranking-rules.html'));
+ok('Ranking por torneios expõe hierarquia ambiente/torneio/etapa',tour.includes('CLUBE / LIGA → TORNEIO → ETAPA')&&tour.includes('id="environment"')&&tour.includes('id="tournament"')&&tour.includes('id="stage"'));
+ok('Ranking por torneios permite todas as etapas ou etapa separada',tour.includes('TODAS AS ETAPAS')&&tour.includes("stageEl.value==='ALL'"));
+ok('Ranking por ligas restringe catálogo a LIGA',league.includes("filter(x=>x.type==='LEAGUE')"));
+ok('Ranking por ligas consolida torneios e etapas',league.includes('TODOS OS TORNEIOS')&&league.includes('ETAPA(S)'));
+ok('Critérios permitem escopo organização ou torneio',rules.includes('value="ORGANIZATION"')&&rules.includes('value="TOURNAMENT"'));
+ok('Critérios possuem pontuação por colocação',rules.includes('PONTUAÇÃO POR COLOCAÇÃO')&&rules.includes('i<=20'));
+ok('Critérios possuem melhores etapas e desempate',rules.includes('bestStages')&&rules.includes('tieBreaker'));
+ok('Critérios possuem SALVAR explícito',rules.includes('SALVAR CRITÉRIOS E REGRAS')&&rules.includes('StackupRanking.saveRule'));
+ok('Motor possui hierarquia persistente',engine.includes('rankingStageMeta')&&engine.includes('rankingTournamentId')&&engine.includes('stageName'));
+ok('Motor aplica regra específica antes da organização',engine.includes('if(tournament)return state.rankingRules.find'));
+ok('Motor suporta melhores etapas',engine.includes('scopeRule?.bestStages')&&engine.includes('countedStages'));
+ok('Setup instala campo ETAPA funcional',setup.includes("input.id='stageName'")&&setup.includes("input.placeholder='ETAPA (EX.: ETAPA 1)'")&&setup.includes('HIERARQUIA ATUAL:'));
+ok('Setup grava metadados da etapa ao salvar torneio',setup.includes('saveTournamentBtn')&&setup.includes('state.rankingStageMeta[id]=meta'));
+ok('Setup corrige nome/id do ambiente antes de persistir',setup.includes('syncEnvironmentState')&&setup.includes('state.clubName=env.name'));
+ok('Snapshot de fechamento preserva hierarquia',snap.includes('rankingTournamentId')&&snap.includes('rankingTournamentName')&&snap.includes('stageId')&&snap.includes('stageName'));
+ok('Runtime global carrega hierarquia no setup',theme.includes('ranking-hierarchy-setup-v1.js'));
+ok('Runtime global carrega hierarquia na gestão',theme.includes('ranking-hierarchy-manager-v1.js'));
+if(failures.length){console.error(`RANKING HIERARCHY AUDIT FAILED: ${failures.length}`);failures.forEach(x=>console.error('- '+x));process.exit(1)}
+console.log('RANKING HIERARCHY AUDIT PASS');

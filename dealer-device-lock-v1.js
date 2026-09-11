@@ -1,0 +1,10 @@
+(()=>{
+'use strict';
+const page=(location.pathname.split('/').pop()||'index.html').toLowerCase();
+if(page==='dealer-access.html')return;
+function current(){try{return window.StackupAuth?.current?.()||null}catch(_){return null}}
+function grant(){try{return JSON.parse(localStorage.getItem('stackup-dealer-device-grant-v1')||'null')}catch(_){return null}}
+function blockDealerStation(message){if(page!=='dealer.html')return;let o=document.getElementById('dealerDeviceLock');if(!o){o=document.createElement('div');o.id='dealerDeviceLock';o.style.cssText='position:fixed;inset:0;z-index:99999;background:#020302;display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;color:#fff';o.innerHTML='<div style="max-width:560px;width:100%;text-align:center"><div style="color:#8DFC3B;letter-spacing:.14em;margin-bottom:14px">STACKUP HOLD\'EM ENTERPRISE</div><div style="font-size:24px;margin-bottom:10px">DEALER STATION</div><div id="dealerDeviceLockText" style="color:#AEB8B1;line-height:1.5"></div></div>';document.body.appendChild(o)}const t=document.getElementById('dealerDeviceLockText');if(t)t.textContent=message}
+function apply(){const s=current();if(!s||String(s.role||'').toUpperCase()!=='DEALER')return;if(page!=='dealer.html'){location.replace('dealer.html');return}const g=grant(),dev=window.StackupAuth?.deviceId?.()||'';if(!g||String(g.staffId)!==String(s.staffId)||String(g.deviceId)!==String(dev)||Date.now()>+g.expiresAt){blockDealerStation('ESTE CELULAR AINDA NÃO FOI LIBERADO PARA ESTE DEALER. A LIBERAÇÃO DEVE SER FEITA EM GESTÃO DE TORNEIOS > ATIVAR DEALER.');return}document.getElementById('dealerDeviceLock')?.remove();const table=document.getElementById('tableNumber');if(table){table.value=String(g.table||1);table.disabled=true}const ft=document.getElementById('finalTableCheckin');if(ft&&!g.finalTableAllowed)ft.disabled=true}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();setInterval(apply,700);
+})();

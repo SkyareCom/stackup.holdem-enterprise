@@ -1,0 +1,10 @@
+(()=>{
+'use strict';
+if((location.pathname.split('/').pop()||'').toLowerCase()!=='tournament-close.html')return;
+const eventOf=p=>String(p?.eventId||p?.validationEventId||'');
+const points=(p,event)=>{const r=(state.rankings||[]).find(x=>String(x.eventId||event)===String(event)&&(String(x.playerId||'')===String(p.id||'')||(p.directoryId&&String(x.directoryId||'')===String(p.directoryId))));return Number(r?.points??p?.rankingPoints??p?.generalRankingPoints??p?.points??p?.score??0)||0};
+const currentRows=()=>{const event=String(state.eventId||'');if(!event)return[];return(state.players||[]).filter(p=>eventOf(p)===event).map(p=>({playerId:p.id,directoryId:p.directoryId||'',directoryCpf:p.directoryCpf||'',name:p.name||p.playerName||'JOGADOR',finishPosition:p.finishPosition||null,points:points(p,event)}))};
+const stamp=()=>{const c=(state.eventClosures||[])[0],event=String(state.eventId||'');if(!c||String(c.eventId||'')!==event)return;const meta=state.rankingStageMeta?.[event]||{};c.environmentId=c.environmentId||meta.environmentId||state.activeEnvironmentId||state.clubId||'';c.environmentName=c.environmentName||meta.environmentName||state.activeEnvironmentName||state.clubName||'';c.environmentType=c.environmentType||meta.environmentType||state.activeEnvironmentType||state.clubType||'';c.rankingTournamentId=c.rankingTournamentId||meta.tournamentId||state.rankingTournamentId||'';c.rankingTournamentName=c.rankingTournamentName||meta.tournamentName||state.rankingTournamentName||state.tournamentName||'';c.stageId=c.stageId||meta.stageId||event;c.stageName=c.stageName||meta.stageName||state.stageName||'ETAPA ÚNICA';c.league=c.league||state.league||'';c.season=c.season||state.season||'';c.rankingRows=currentRows();c.playerCount=c.rankingRows.length;saveState()};
+const bind=()=>{const b=document.getElementById('closeEvent');if(!b||b.dataset.rankingSnapshotBound==='1')return;b.dataset.rankingSnapshotBound='1';b.addEventListener('click',()=>setTimeout(stamp,0))};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
+})();
