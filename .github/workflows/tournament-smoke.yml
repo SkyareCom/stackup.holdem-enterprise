@@ -1,0 +1,124 @@
+name: Tournament Smoke Test
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Run tournament smoke test
+        run: node tests/tournament-smoke.js
+      - name: Run tournament isolation runtime proof
+        if: always()
+        run: node tests/tournament-isolation-runtime.js
+      - name: Run balancing environment isolation proof
+        if: always()
+        run: node tests/balancing-scope-runtime.js
+      - name: Run tournament detail scope audit
+        if: always()
+        run: node tests/tournament-detail-scope-audit.js
+      - name: Run control hub tournament isolation audit
+        if: always()
+        run: node tests/control-hub-scope-audit.js
+      - name: Run readiness tournament isolation proof
+        if: always()
+        run: node tests/readiness-scope-runtime.js
+      - name: Run tournament manager permission audit
+        if: always()
+        run: node tests/tournament-manager-permission-audit.js
+      - name: Run communication security audit
+        if: always()
+        run: node tests/communication-security-audit.js
+      - name: Run role navigation audit
+        if: always()
+        run: node tests/role-navigation-audit.js
+      - name: Run cash security audit
+        if: always()
+        run: node tests/cash-security-audit.js
+      - name: Run wallet read safety audit
+        if: always()
+        run: node tests/wallet-read-safety-audit.js
+      - name: Run dealer activation audit
+        if: always()
+        run: node tests/dealer-activation-audit.js
+      - name: Run final table settings audit
+        if: always()
+        run: node tests/final-table-settings-audit.js
+      - name: Run alert save audit
+        if: always()
+        run: node tests/alert-save-audit.js
+      - name: Run static UI button audit
+        if: always()
+        run: node tests/ui-button-audit.js
+      - name: Run final interaction audit
+        if: always()
+        run: node tests/final-interaction-audit.js
+      - name: Run DOM global collision audit
+        if: always()
+        run: node tests/dom-global-collision-audit.js
+      - name: Run production readiness audit
+        if: always()
+        run: node tests/production-readiness.js
+      - name: Run cross-sector integration audit
+        if: always()
+        run: node tests/cross-sector-integration-audit.js
+      - name: Run runtime API contract audit
+        if: always()
+        run: node tests/runtime-api-contract-audit.js
+      - name: Run staff integrity audit
+        if: always()
+        run: node tests/staff-integrity-audit.js
+      - name: Run player directory integrity audit
+        if: always()
+        run: node tests/player-directory-integrity-audit.js
+      - name: Run authenticated surface audit
+        if: always()
+        run: node tests/auth-surface-audit.js
+      - name: Run tertiary structure audit
+        if: always()
+        run: node tests/tertiary-structure-audit.js
+      - name: Run in-app drawer audit
+        if: always()
+        run: node tests/in-app-drawer-audit.js
+      - name: Run secondary screen audit
+        if: always()
+        run: node tests/secondary-screen-audit.js
+      - name: Run confirmation standard audit
+        if: always()
+        run: node tests/confirmation-standard-audit.js
+      - name: Run environment context audit
+        if: always()
+        run: node tests/environment-context-audit.js
+      - name: Run ranking hierarchy audit
+        if: always()
+        run: node tests/ranking-hierarchy-audit.js
+      - name: Run save persistence audit
+        if: always()
+        run: node tests/save-persistence-audit.js
+      - name: Run input mask audit
+        if: always()
+        run: node tests/input-mask-audit.js
+      - name: Run language coverage audit
+        if: always()
+        run: node tests/language-audit.js
+      - name: Run Spanish English-residue audit
+        if: always()
+        run: node tests/spanish-english-audit.js
+      - name: Run alerts runtime language audit
+        if: always()
+        run: node tests/language-runtime-alerts-audit.js
+      - name: Run publication gate parity audit
+        if: always()
+        run: node tests/publication-gate-parity-audit.js
