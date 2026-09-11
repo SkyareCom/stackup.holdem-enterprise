@@ -122,3 +122,6 @@ jobs:
       - name: Run publication gate parity audit
         if: always()
         run: node tests/publication-gate-parity-audit.js
+      - name: Report popup surfaces
+        if: always()
+        run: node tests/popup-surface-audit.js
