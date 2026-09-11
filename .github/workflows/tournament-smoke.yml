@@ -89,7 +89,7 @@ jobs:
       - name: Run tertiary structure audit
         if: always()
         run: node tests/tertiary-structure-audit.js
-      - name: Run in-app drawer audit
+      - name: Run open-list UI audit
         if: always()
         run: node tests/in-app-drawer-audit.js
       - name: Run secondary screen audit
@@ -122,6 +122,6 @@ jobs:
       - name: Run publication gate parity audit
         if: always()
         run: node tests/publication-gate-parity-audit.js
-      - name: Report popup surfaces
+      - name: Enforce no-popup UI contract
         if: always()
-        run: node tests/popup-surface-audit.js
+        run: node tests/popup-surface-audit.js --enforce
