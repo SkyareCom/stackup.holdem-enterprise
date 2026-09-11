@@ -30,7 +30,8 @@ assert('data entry não injeta confirmação de comunicação',!entry.includes('
 assert('data entry não injeta confirmação de ranking',!entry.includes('confirmRankingFilter'));
 assert('data entry não injeta confirmação de reconhecimento',!entry.includes('confirmRecognitionSearch'));
 const lists=read('in-app-lists.js');
-assert('listas sintéticas são opt-in',lists.includes("hasAttribute('data-stackup-inline-list')")&&lists.includes('select[data-stackup-inline-list]'));
+assert('listas de opções ficam abertas no plano do aplicativo',lists.includes("querySelectorAll?.('select')")&&lists.includes("setAttribute('size'")&&lists.includes('data-stackup-options-open'));
+assert('listas não usam gatilho ABRIR/FECHAR',!lists.includes('stackup-select-trigger')&&!lists.includes("content:'ABRIR'")&&!lists.includes("content:'FECHAR'"));
 
 const auth=read('auth-engine.js');
 assert('auth define CASHIER',/CASHIER:\s*\[/.test(auth));
