@@ -16,7 +16,7 @@ for(const file of htmlFiles){
 }
 
 const listSource=fs.readFileSync('in-app-lists.js','utf8');
-for(const required of ['select.stackup-open-list','data-stackup-options-open','setAttribute(\'size\'','MutationObserver','data-stackup-drawer','data-stackup-drawer-trigger','data-stackup-drawer-panel',"querySelectorAll?.('select')",'display:block!important','position:relative!important']){
+for(const required of ['select.stackup-open-list','data-stackup-options-open','setAttribute(\'size\'','MutationObserver','data-stackup-drawer','data-stackup-drawer-trigger','data-stackup-drawer-panel',"querySelectorAll?.('select')",'display:block!important','position:relative!important','html body .stackup-details{display:block!important','forceOpenRows','stackup-expanded','historyActions{display:grid!important']){
   if(!listSource.includes(required))failures.push(`in-app-lists.js: falta padrão obrigatório ${required}`);
 }
 for(const forbidden of ['stackup-select-trigger','stackup-select-list',"content:'ABRIR'","content:'FECHAR'","hasAttribute('data-stackup-inline-list')"]){
@@ -40,4 +40,4 @@ if(!entrySource.includes('in-app-lists.js'))failures.push('data-entry-standard.j
 if(!entrySource.includes('ui-standard.js'))failures.push('data-entry-standard.js: não carrega padrão global de botões/fontes');
 
 if(failures.length){failures.forEach(f=>console.error('FAIL:',f));process.exit(1)}
-console.log(`OPEN INLINE LIST AUDIT PASS: ${htmlFiles.length} páginas verificadas; opções sem dropdown/gaveta intermediária.`);
+console.log(`OPEN INLINE LIST AUDIT PASS: ${htmlFiles.length} páginas verificadas; opções e ações permanecem abertas no plano do aplicativo.`);
