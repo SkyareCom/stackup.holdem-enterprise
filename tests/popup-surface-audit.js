@@ -7,10 +7,12 @@ const deployArtifact=process.env.STACKUP_DEPLOY_ARTIFACT==='1';
 const ignoreDirs=new Set(['.git','node_modules','tests','.github']);
 const exts=new Set(['.js','.html','.css']);
 const protectedDisplays=new Set(['cast-10px.html','cast-v2.html','cast-ft-live.html','tv.html','tv-connect.html']);
+const protectedDisplayPaths=new Set(['tv/index.html']);
 const failures=[];
 const notes=[];
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const fail=m=>failures.push(m);
+const isProtectedDisplay=(rel,base)=>protectedDisplays.has(base)||protectedDisplayPaths.has(rel.toLowerCase());
 
 const files=[];
 function walk(dir){
@@ -28,11 +30,12 @@ let coveredLegacyCalls=0;
 for(const abs of files){
   const rel=path.relative(root,abs).replace(/\\/g,'/');
   const base=path.basename(rel).toLowerCase();
+  const protectedDisplay=isProtectedDisplay(rel,base);
   const text=fs.readFileSync(abs,'utf8');
   if(/\bwindow\.open\s*\(/.test(text))fail(`${rel}: usa window.open; abertura externa/pop-up proibida`);
   if(/\.showModal\s*\(/.test(text))fail(`${rel}: usa showModal; diálogo modal proibido`);
   if(/<dialog\b/i.test(text))fail(`${rel}: contém <dialog>; diálogo modal proibido`);
-  if(!protectedDisplays.has(base)&&/position\s*:\s*fixed/i.test(text)&&/(?:modal|overlay|popup)/i.test(text))fail(`${rel}: contém camada fixa modal/overlay/popup fora das telas de transmissão`);
+  if(!protectedDisplay&&/position\s*:\s*fixed/i.test(text)&&/(?:modal|overlay|popup)/i.test(text))fail(`${rel}: contém camada fixa modal/overlay/popup fora das telas de transmissão`);
 
   nativeCall.lastIndex=0;
   let m;
@@ -41,7 +44,7 @@ for(const abs of files){
     if(/function\s+$/.test(prefix))continue;
     if(rel==='inline-interactions-v1.js')continue;
     coveredLegacyCalls++;
-    if(protectedDisplays.has(base))fail(`${rel}: chama ${m[1]}() em tela protegida que não recebe adaptador inline`);
+    if(protectedDisplay)fail(`${rel}: chama ${m[1]}() em tela protegida que não recebe adaptador inline`);
   }
 }
 
