@@ -40,6 +40,26 @@
       }
       [data-stackup-drawer-panel] button:last-child,[data-stackup-drawer-panel] [role="button"]:last-child,[data-stackup-drawer-panel] a:last-child{border-bottom:0!important}
       [data-stackup-drawer-panel] button:hover,[data-stackup-drawer-panel] button:focus-visible,[data-stackup-drawer-panel] [role="button"]:focus-visible,[data-stackup-drawer-panel] a:focus-visible{color:#8DFC3B!important;outline:none!important}
+
+      html body .stackup-details{display:block!important;position:relative!important;inset:auto!important;z-index:auto!important}
+      html body .historyRow.stackup-compact-row .historyInfo>.badge{display:inline-block!important}
+      html body .historyRow.stackup-compact-row .historyInfo>.meta,
+      html body .listRow.stackup-compact-row>.meta,
+      html body .listRow.stackup-compact-row .rowContent>.meta,
+      html body .list>.row.stackup-compact-row>.meta,
+      html body .list>.row.stackup-compact-row>.purchases,
+      html body .list>.row.stackup-compact-row>.total,
+      html body .list>.row.stackup-compact-row>.seat,
+      html body .list>.row.stackup-compact-row>.pos{display:block!important;position:relative!important;margin-top:5px!important}
+      html body .historyRow.stackup-compact-row .stackup-row-actions,
+      html body .listRow.stackup-compact-row>.stackup-row-actions,
+      html body .listRow.stackup-compact-row>.actions,
+      html body .listRow.stackup-compact-row>.editorActions,
+      html body .historyRow.stackup-compact-row>.historyActions{display:grid!important;position:relative!important;inset:auto!important;z-index:auto!important}
+      html body .listRow.stackup-compact-row>.editor,
+      html body .listRow.stackup-compact-row>.notice{display:block!important;position:relative!important;inset:auto!important;z-index:auto!important}
+      html body .stackup-compact-row{padding-bottom:12px!important}
+      html body .stackup-compact-row .stackup-compact-name{cursor:default!important;color:#fff!important;padding-bottom:8px!important}
     `;
     (document.head||document.documentElement).appendChild(style);
   };
@@ -69,11 +89,15 @@
     if(trigger){trigger.hidden=true;trigger.setAttribute('aria-expanded','true')}
     if(panel){panel.hidden=false;panel.removeAttribute('aria-hidden')}
   };
+  const forceOpenRows=root=>{
+    root?.querySelectorAll?.('.stackup-compact-row').forEach(row=>{row.classList.add('stackup-expanded');const name=row.querySelector('.stackup-compact-name');if(name){name.setAttribute('aria-expanded','true');name.removeAttribute('aria-label')}});
+  };
   const apply=root=>{
     if(root?.matches?.('select'))enhanceSelect(root);
     root?.querySelectorAll?.('select').forEach(enhanceSelect);
     if(root?.matches?.('[data-stackup-drawer]'))enhanceDrawer(root);
     root?.querySelectorAll?.('[data-stackup-drawer]').forEach(enhanceDrawer);
+    forceOpenRows(root);
   };
   const boot=()=>{
     addStyle();apply(document);
