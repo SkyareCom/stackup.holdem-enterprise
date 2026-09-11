@@ -63,6 +63,7 @@ jobs:
           node tests/language-audit.js
           node tests/spanish-english-audit.js
           node tests/language-runtime-alerts-audit.js
+          node tests/popup-surface-audit.js --enforce
           node tests/publication-gate-parity-audit.js
       - name: Build published artifact
         run: |
@@ -122,7 +123,12 @@ jobs:
                 s=canonicalize(s,'setup-ui-standard-v1.js','<script src="setup-ui-standard-v1.js?v=d61d9d2e"></script>');
               }
               if(!isOfficialCast&&!s.includes('app-language-final.js'))s=s.replace(/<\/body>/i,'<script src="app-language-final.js?v=904063e6"></script></body>');
-              if(!skipThemeStandard)s=canonicalize(s,'app-theme.js','<script src="app-theme.js?v=navfull0913"></script>');
+              if(!skipThemeStandard){
+                s=canonicalize(s,'in-app-lists.js','<script src="in-app-lists.js?v=openlists0911b"></script>');
+                s=canonicalize(s,'inline-interactions-v1.js','<script src="inline-interactions-v1.js?v=inline0911b"></script>');
+                s=canonicalize(s,'clickable-list-drawer-v1.js','<script src="clickable-list-drawer-v1.js?v=direct0911b"></script>');
+                s=canonicalize(s,'app-theme.js','<script src="app-theme.js?v=nopopup0911"></script>');
+              }
               if(!skipButtonStandard)s=canonicalize(s,'app-button-layout-standard-v1.js','<script src="app-button-layout-standard-v1.js?v=fullrow0912"></script>');
 
               const appendIfMissing=(name,tag)=>{if(!s.includes(name))s=s.replace(/<\/body>/i,tag+'</body>')};
@@ -134,13 +140,13 @@ jobs:
                 appendIfMissing('setup-ft-ui-fix.js','<script src="setup-ft-ui-fix.js?v=1a4d7862"></script>');
                 appendIfMissing('setup-structure-actions-v2.js','<script src="setup-structure-actions-v2.js?v=920fbebb"></script>');
                 appendIfMissing('setup-new-tournament-reset-v1.js','<script src="setup-new-tournament-reset-v1.js?v=c3cade35"></script>');
-                appendIfMissing('setup-structure-owner-v1.js','<script src="setup-structure-owner-v1.js?v=1d543795"></script>');
+                appendIfMissing('setup-structure-owner-v1.js','<script src="setup-structure-owner-v1.js?v=nopopup0911"></script>');
               }
               if(file==='staff.html')appendIfMissing('staff-role-list-fix.js','<script src="staff-role-list-fix.js?v=roles-native0910"></script>');
               if(file==='tournament-manager.html')s=canonicalize(s,'tournament-manager-audit-v1.js','<script src="tournament-manager-audit-v1.js?v=dealer-snapshot0911"></script>');
               if(['checkin.html','pre-registration.html','smart-registration.html'].includes(file))appendIfMissing('tournament-validation-gate-v1.js','<script src="tournament-validation-gate-v1.js?v=publication0914"></script>');
-              if(file!=='dealer-access.html')appendIfMissing('dealer-device-lock-v1.js','<script src="dealer-device-lock-v1.js?v=dealerlock0909"></script>');
-              if(file==='dealer.html')appendIfMissing('dealer-device-sync-v1.js','<script src="dealer-device-sync-v1.js?v=dealersync0909"></script>');
+              if(file!=='dealer-access.html')appendIfMissing('dealer-device-lock-v1.js','<script src="dealer-device-lock-v1.js?v=inline0911"></script>');
+              if(file==='dealer.html')appendIfMissing('dealer-device-sync-v1.js','<script src="dealer-device-sync-v1.js?v=inline0911"></script>');
               if(isLegacyCast)appendIfMissing('cast-mobile-fit.js','<script src="cast-mobile-fit.js?v=2"></script>');
 
               fs.writeFileSync(p,s);
@@ -170,6 +176,8 @@ jobs:
           node tests/tertiary-structure-audit.js
           node tests/ranking-hierarchy-audit.js
           node tests/save-persistence-audit.js
+          node tests/in-app-drawer-audit.js
+          node tests/popup-surface-audit.js --enforce
       - name: Install Chromium audit runtime
         run: |
           mkdir -p /tmp/stackup-e2e
