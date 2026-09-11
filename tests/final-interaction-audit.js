@@ -117,7 +117,7 @@ for(const required of [
 for(const required of ['.timeGrid','.blindModeRow','.editorActions','.payGrid','.dealerGrid','.dealerActions','.finalTableActions','.roundControls','.tabs','.pagination','.keypad','.keyboard','[data-internal-controls]'])if(!standard.includes(required))failures.push(`app-button-layout-standard-v1.js: EXCEÇÃO INTERNA AUSENTE -> ${required}`);
 
 const pages=fs.readFileSync(path.join(root,'.github/workflows/pages.yml'),'utf8');
-for(const required of ['app-theme.js?v=navfull0913','app-button-layout-standard-v1.js?v=fullrow0912',"['tv.html','tv-connect.html','dealer-access.html']",'isOfficialCast','isLegacyCast'])if(!pages.includes(required))failures.push(`pages.yml: REGRA DE PUBLICAÇÃO AUSENTE -> ${required}`);
+for(const required of ['app-theme.js?v=nopopup0911','in-app-lists.js?v=openlists0911b','inline-interactions-v1.js?v=inline0911b','app-button-layout-standard-v1.js?v=fullrow0912',"['tv.html','tv-connect.html','dealer-access.html']",'isOfficialCast','isLegacyCast'])if(!pages.includes(required))failures.push(`pages.yml: REGRA DE PUBLICAÇÃO AUSENTE -> ${required}`);
 
 if(normalizableNested){infos.push(`NORMALIZAÇÃO DE COMPATIBILIDADE: ${normalizableNested} navegação(ões) legada(s) <a><button> serão convertidas em link-botão único antes da interação.`);for(const [file,n] of nestedByFile)infos.push(`NORMALIZADO EM RUNTIME: ${file} -> ${n}`)}
 if(protectedNested){warnings.push(`EXCEÇÕES PROTEGIDAS: ${protectedNested} aninhamento(s) interativo(s) mantido(s) sem alteração.`);for(const [file,n] of protectedNestedByFile)warnings.push(`ANINHAMENTO PROTEGIDO: ${file} -> ${n}`)}
