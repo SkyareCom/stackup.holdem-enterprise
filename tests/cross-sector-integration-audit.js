@@ -76,7 +76,8 @@ const confirmation=read('confirmation-standard.js'),dataEntry=read('data-entry-s
 ok('UI: camada global não auto-confirma confirmação nativa',!confirmation.includes('window.confirm='));
 ok('UI: camada global não injeta CADASTRAR NOVO',!confirmation.includes('CADASTRAR NOVO'));
 ok('UI: data-entry não injeta controles funcionais',!dataEntry.includes('directoryHub()')&&!dataEntry.includes('confirmRankingFilter')&&!dataEntry.includes('confirmRecognitionSearch'));
-ok('UI: select sintético só é opt-in',lists.includes("hasAttribute('data-stackup-inline-list')"));
+ok('UI: selects ficam abertos diretamente no fluxo',lists.includes("querySelectorAll?.('select')")&&lists.includes("setAttribute('size'")&&lists.includes('data-stackup-options-open'));
+ok('UI: lista clicável executa ação sem gaveta intermediária',!read('clickable-list-drawer-v1.js').includes('preventDefault()')&&!read('clickable-list-drawer-v1.js').includes('openDrawer('));
 
 if(failures.length){console.error(`CROSS-SECTOR INTEGRATION AUDIT FAILED: ${failures.length}`);failures.forEach(f=>console.error('- '+f));process.exit(1)}
 console.log('CROSS-SECTOR INTEGRATION AUDIT PASS');
