@@ -47,15 +47,17 @@
   const visibleRows=select=>Math.max(2,Math.min(8,Math.max(1,select.options?.length||0)));
   const syncSelect=select=>{
     if(!select||select.dataset.stackupInlineList!=='1')return;
+    if(select.hidden||select.closest('[hidden]'))return;
     select.classList.add('stackup-open-list');
     select.setAttribute('size',String(visibleRows(select)));
     select.setAttribute('data-stackup-options-open','1');
+    select.setAttribute('aria-expanded','true');
   };
   const enhanceSelect=select=>{
     if(!select||select.dataset.stackupInlineList==='1'||select.hidden||select.closest('[hidden]'))return;
     select.dataset.stackupInlineList='1';
     syncSelect(select);
-    new MutationObserver(()=>syncSelect(select)).observe(select,{childList:true,subtree:true,attributes:true,attributeFilter:['disabled','selected','label','value']});
+    new MutationObserver(()=>syncSelect(select)).observe(select,{childList:true,subtree:true,attributes:true,attributeFilter:['disabled','selected','label','value','hidden','class','style']});
   };
   const enhanceDrawer=drawer=>{
     if(!drawer||drawer.dataset.stackupDrawerReady==='1')return;
@@ -76,7 +78,7 @@
   const boot=()=>{
     addStyle();apply(document);
     new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1)apply(n)}))).observe(document.documentElement,{childList:true,subtree:true});
-    setInterval(()=>document.querySelectorAll('select[data-stackup-inline-list="1"]').forEach(syncSelect),700);
+    setInterval(()=>{apply(document);document.querySelectorAll('select[data-stackup-inline-list="1"]').forEach(syncSelect)},700);
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
