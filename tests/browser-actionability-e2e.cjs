@@ -9,9 +9,12 @@ const roleConfig={
   CASHIER:{personId:'person-cashier',staffId:'cashier1',membershipId:'m-cashier',name:'QA CASHIER'},
   VIEWER:{personId:'person-viewer',staffId:'viewer1',membershipId:'m-viewer',name:'QA VIEWER'}
 };
+// setup.html is intentionally exercised by browser-setup-dynamic-e2e.cjs, which performs
+// real clicks, persistence and structure activation. Keeping it out of this generic trial-click
+// sweep avoids duplicating a stateful screen with a weaker, synthetic actionability pass.
 const routes={
   TD:[
-    'index.html','tournaments.html','tournament-settings.html','setup.html',
+    'index.html','tournaments.html','tournament-settings.html',
     'tournament-manager.html?id=event-e2e','ready-tournaments.html','tournament-readiness.html','control.html',
     'players-hub.html','players-directory.html?view=registered','checkin.html','final-table-settings.html',
     'screen.html','screen-settings.html','screen-alerts.html','communication-hub.html','communications.html','bot.html',
