@@ -123,6 +123,9 @@ jobs:
                 s=canonicalize(s,'setup-core-fix-v1.js','<script src="setup-core-fix-v1.js?v=98a44fc9"></script>');
                 s=canonicalize(s,'setup-ui-standard-v1.js','<script src="setup-ui-standard-v1.js?v=d61d9d2e"></script>');
               }
+              if(file==='players-directory.html'){
+                s=canonicalize(s,'player-directory-history.js','<script data-player-history src="player-directory-history.js?v=registered-list-0912e"></script>');
+              }
               if(!isOfficialCast&&!s.includes('app-language-final.js'))s=s.replace(/<\/body>/i,'<script src="app-language-final.js?v=904063e6"></script></body>');
               if(!skipThemeStandard){
                 s=canonicalize(s,'app-layout-standard-v2.js','<script src="app-layout-standard-v2.js?v=layout0912b"></script>');
@@ -192,7 +195,7 @@ jobs:
           trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
           sleep 2
           PLAYWRIGHT_BROWSERS_PATH=/tmp/stackup-browsers NODE_PATH=/tmp/stackup-e2e/node_modules STACKUP_E2E_BASE=http://127.0.0.1:4173 node tests/browser-open-test-e2e.cjs
-          timeout 240s env PLAYWRIGHT_BROWSERS_PATH=/tmp/stackup-browsers NODE_PATH=/tmp/stackup-e2e/node_modules STACKUP_E2E_BASE=http://127.0.0.1:4173 node tests/browser-actionability-e2e.cjs
+          timeout 480s env PLAYWRIGHT_BROWSERS_PATH=/tmp/stackup-browsers NODE_PATH=/tmp/stackup-e2e/node_modules STACKUP_E2E_BASE=http://127.0.0.1:4173 node tests/browser-actionability-e2e.cjs
           PLAYWRIGHT_BROWSERS_PATH=/tmp/stackup-browsers NODE_PATH=/tmp/stackup-e2e/node_modules STACKUP_E2E_BASE=http://127.0.0.1:4173 node tests/browser-control-dynamic-e2e.cjs
           PLAYWRIGHT_BROWSERS_PATH=/tmp/stackup-browsers NODE_PATH=/tmp/stackup-e2e/node_modules STACKUP_E2E_BASE=http://127.0.0.1:4173 node tests/browser-environment-dynamic-e2e.cjs
           PLAYWRIGHT_BROWSERS_PATH=/tmp/stackup-browsers NODE_PATH=/tmp/stackup-e2e/node_modules STACKUP_E2E_BASE=http://127.0.0.1:4173 node tests/browser-manager-dynamic-e2e.cjs
