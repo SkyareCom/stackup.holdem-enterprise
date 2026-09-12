@@ -125,10 +125,11 @@ jobs:
               }
               if(!isOfficialCast&&!s.includes('app-language-final.js'))s=s.replace(/<\/body>/i,'<script src="app-language-final.js?v=904063e6"></script></body>');
               if(!skipThemeStandard){
+                s=canonicalize(s,'app-layout-standard-v2.js','<script src="app-layout-standard-v2.js?v=layout0912b"></script>');
                 s=canonicalize(s,'in-app-lists.js','<script src="in-app-lists.js?v=openlists0911b"></script>');
                 s=canonicalize(s,'inline-interactions-v1.js','<script src="inline-interactions-v1.js?v=inline0911b"></script>');
                 s=canonicalize(s,'clickable-list-drawer-v1.js','<script src="clickable-list-drawer-v1.js?v=direct0911b"></script>');
-                s=canonicalize(s,'app-theme.js','<script src="app-theme.js?v=nopopup0911"></script>');
+                s=canonicalize(s,'app-theme.js','<script src="app-theme.js?v=layout0912b"></script>');
               }
               if(!skipButtonStandard)s=canonicalize(s,'app-button-layout-standard-v1.js','<script src="app-button-layout-standard-v1.js?v=fullrow0912"></script>');
 
