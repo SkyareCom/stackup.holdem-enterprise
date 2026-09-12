@@ -21,10 +21,17 @@ function assert(name,ok,detail=''){checks++;if(ok)console.log('PASS:',name);else
    await page.locator('#timeButtons [data-time="20"]').click();
    await page.waitForTimeout(100);
    assert('Selecionar tempo preserva o identificador do nível',(await page.locator('#levels [data-identifier-toggle]').count())>=1);
-   const row=page.locator('#levels .levelRow').first();
-   const sb=row.locator('input[aria-label="SB"]'),bb=row.locator('input[aria-label="BB"]'),ante=row.locator('input[aria-label="ANTE"]');
+   let row=page.locator('#levels .levelRow').first();
+   let sb=row.locator('input[aria-label="SB"]'),bb=row.locator('input[aria-label="BB"]'),ante=row.locator('input[aria-label="ANTE"]');
    await sb.fill('100');await sb.blur();await bb.fill('200');await bb.blur();await ante.fill('200');await ante.blur();
    await row.locator('[data-row-action="ok"],button').filter({hasText:'OK'}).first().click();
+   await row.locator('[data-row-action="add"],button').filter({hasText:'ADD'}).first().click();
+   await page.waitForTimeout(100);
+   row=page.locator('#levels .levelRow').nth(1);
+   sb=row.locator('input[aria-label="SB"]');bb=row.locator('input[aria-label="BB"]');ante=row.locator('input[aria-label="ANTE"]');
+   await sb.fill('200');await sb.blur();await bb.fill('400');await bb.blur();await ante.fill('400');await ante.blur();
+   await row.locator('[data-row-action="ok"],button').filter({hasText:'OK'}).first().click();
+   assert('Estrutura válida possui pelo menos dois níveis',(await page.locator('#levels .levelRow').count())>=2);
    await page.locator('#saveStructure').click();
    assert('SALVAR abre nome da estrutura',await page.locator('#saveNameRow').isVisible());
    await page.locator('#structureName').fill('ESTRUTURA QA DINÂMICA');
@@ -32,19 +39,22 @@ function assert(name,ok,detail=''){checks++;if(ok)console.log('PASS:',name);else
    let snap=await page.evaluate(()=>({saved:state.savedStructures,structure:state.structure}));
    assert('Estrutura é persistida ao confirmar',snap.saved.some(x=>x.name==='ESTRUTURA QA DINÂMICA'),JSON.stringify(snap.saved));
    const saved=snap.saved.find(x=>x.name==='ESTRUTURA QA DINÂMICA');
-   assert('Estrutura salva preserva tempo e blinds',saved&&saved.rows?.[0]&&Number(saved.rows[0].time)===20&&Number(saved.rows[0].sb)===100&&Number(saved.rows[0].bb)===200,JSON.stringify(saved));
+   assert('Estrutura salva preserva dois níveis válidos',saved&&saved.rows?.length>=2&&Number(saved.rows[0].time)===20&&Number(saved.rows[0].sb)===100&&Number(saved.rows[0].bb)===200&&Number(saved.rows[1].sb)===200&&Number(saved.rows[1].bb)===400,JSON.stringify(saved));
    await page.locator('#historyStructure').click();
    const item=page.locator('#historyList .historyItem').filter({hasText:'ESTRUTURA QA DINÂMICA'});
    assert('HISTÓRICO mostra estrutura salva',await item.isVisible());
-   const useAction=item.locator('.historyActions button').first();
+   const useAction=item.locator('.historyActions button[data-structure-activate],.historyActions button').first();
    await useAction.waitFor({state:'visible',timeout:5000});
+   assert('Histórico expõe ATIVAR E USAR ESTRUTURA',(await useAction.innerText()).trim()==='ATIVAR E USAR ESTRUTURA',(await useAction.innerText()).trim());
    await useAction.click();
    await page.waitForTimeout(100);
-   snap=await page.evaluate(()=>({structure:state.structure}));
-   assert('USAR restaura a estrutura no estado',snap.structure?.length>0&&Number(snap.structure[0].duration)===1200&&Number(snap.structure[0].sb)===100&&Number(snap.structure[0].bb)===200,JSON.stringify(snap.structure));
-   assert('USAR preserva editor com identificadores',(await page.locator('#levels [data-identifier-toggle]').count())>=1);
+   snap=await page.evaluate(()=>({structure:state.structure,selectedStructureId:state.selectedStructureId,selectedStructureName:state.selectedStructureName,status:document.getElementById('stackupStructureStatus')?.textContent||''}));
+   assert('ATIVAR E USAR restaura estrutura válida',snap.structure?.length>=2&&Number(snap.structure[0].duration)===1200&&Number(snap.structure[0].sb)===100&&Number(snap.structure[0].bb)===200&&Number(snap.structure[1].bb)===400,JSON.stringify(snap.structure));
+   assert('ATIVAR E USAR marca a estrutura selecionada',!!snap.selectedStructureId&&snap.selectedStructureName==='ESTRUTURA QA DINÂMICA',JSON.stringify(snap));
+   assert('ATIVAR E USAR confirma vínculo sem popup',/ESTRUTURA ATIVADA E VINCULADA/.test(snap.status),snap.status);
+   assert('ATIVAR E USAR preserva editor com identificadores',(await page.locator('#levels [data-identifier-toggle]').count())>=2);
    assert('Fluxo de estrutura sem exceções JavaScript',errors.length===0,errors.join(' | '));
  }catch(e){assert('Fluxo Chromium SETUP conclui',false,e.stack||e.message)}finally{await context.close();await browser.close()}
  if(failures.length){console.error(`BROWSER SETUP DYNAMIC E2E FAILED: ${failures.length} falha(s).`);failures.forEach(x=>console.error('- '+x));process.exit(1)}
- console.log(`BROWSER SETUP DYNAMIC E2E PASS: ${checks} verificações reais de edição, persistência e histórico.`);
+ console.log(`BROWSER SETUP DYNAMIC E2E PASS: ${checks} verificações reais de edição, persistência, histórico e ativação.`);
 })().catch(e=>{console.error(e.stack||e);process.exit(1)});
