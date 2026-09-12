@@ -103,8 +103,10 @@ for(const required of [
   "document.getElementById('stackup-back').onclick=",
   "document.getElementById('stackup-home').onclick=",
   'grid-template-columns:minmax(0,1fr)!important',
-  '#stackup-global-nav #stackup-back,html body #stackup-global-nav #stackup-home{width:100%!important'
-])if(!theme.includes(required))failures.push(`app-theme.js: NAVEGAÇÃO GLOBAL FORA DO PADRÃO -> ${required}`);
+  '#stackup-global-nav #stackup-back,html body #stackup-global-nav #stackup-home{width:100%!important',
+  "loadScript('app-layout-standard-v2.js",
+  "loadScript('tournament-directory-preserve-v1.js"
+])if(!theme.includes(required))failures.push(`app-theme.js: NAVEGAÇÃO/CAMADA GLOBAL FORA DO PADRÃO -> ${required}`);
 
 const standard=fs.readFileSync(path.join(root,'app-button-layout-standard-v1.js'),'utf8');
 for(const required of [
@@ -116,8 +118,11 @@ for(const required of [
 ])if(!standard.includes(required))failures.push(`app-button-layout-standard-v1.js: GARANTIA GLOBAL AUSENTE -> ${required}`);
 for(const required of ['.timeGrid','.blindModeRow','.editorActions','.payGrid','.dealerGrid','.dealerActions','.finalTableActions','.roundControls','.tabs','.pagination','.keypad','.keyboard','[data-internal-controls]'])if(!standard.includes(required))failures.push(`app-button-layout-standard-v1.js: EXCEÇÃO INTERNA AUSENTE -> ${required}`);
 
+const layout=fs.readFileSync(path.join(root,'app-layout-standard-v2.js'),'utf8');
+for(const required of ['--stackup-line-height','--stackup-card-gap','--stackup-section-gap','stackup-list-actions','stackup-list-count','stackup-simple-list','data-stackup-selection-mode','QUANTIDADE DE JOGADORES','QUANTIDADE DE STAFF','QUANTIDADE DE AMBIENTES','QUANTIDADE DE TORNEIOS','QUANTIDADE DE ETAPAS','localeCompare'])if(!layout.includes(required))failures.push(`app-layout-standard-v2.js: PADRÃO GLOBAL DE ESPAÇAMENTO/LISTA AUSENTE -> ${required}`);
+
 const pages=fs.readFileSync(path.join(root,'.github/workflows/pages.yml'),'utf8');
-for(const required of ['app-theme.js?v=nopopup0911','in-app-lists.js?v=openlists0911b','inline-interactions-v1.js?v=inline0911b','app-button-layout-standard-v1.js?v=fullrow0912',"['tv.html','tv-connect.html','dealer-access.html']",'isOfficialCast','isLegacyCast'])if(!pages.includes(required))failures.push(`pages.yml: REGRA DE PUBLICAÇÃO AUSENTE -> ${required}`);
+for(const required of ["canonicalize(s,'app-theme.js'","canonicalize(s,'app-layout-standard-v2.js'",'in-app-lists.js?v=openlists0911b','inline-interactions-v1.js?v=inline0911b','app-button-layout-standard-v1.js?v=fullrow0912',"['tv.html','tv-connect.html','dealer-access.html']",'isOfficialCast','isLegacyCast'])if(!pages.includes(required))failures.push(`pages.yml: REGRA DE PUBLICAÇÃO AUSENTE -> ${required}`);
 
 if(normalizableNested){infos.push(`NORMALIZAÇÃO DE COMPATIBILIDADE: ${normalizableNested} navegação(ões) legada(s) <a><button> serão convertidas em link-botão único antes da interação.`);for(const [file,n] of nestedByFile)infos.push(`NORMALIZADO EM RUNTIME: ${file} -> ${n}`)}
 if(protectedNested){warnings.push(`EXCEÇÕES PROTEGIDAS: ${protectedNested} aninhamento(s) interativo(s) mantido(s) sem alteração.`);for(const [file,n] of protectedNestedByFile)warnings.push(`ANINHAMENTO PROTEGIDO: ${file} -> ${n}`)}
@@ -127,4 +132,4 @@ console.log(`FINAL INTERACTION AUDIT: modo=${deploy?'ARTEFATO PUBLICADO':'FONTE'
 for(const i of infos)console.log('INFO:',i);
 for(const w of warnings)console.log('WARN:',w);
 if(failures.length){for(const f of failures)console.error('FAIL:',f);process.exit(1)}
-console.log('FINAL INTERACTION AUDIT PASS: estrutura, clique/toque global, rotas locais, IDs, rótulos, exceções, normalização de compatibilidade e camadas de publicação verificados.');
+console.log('FINAL INTERACTION AUDIT PASS: estrutura, clique/toque global, rotas locais, IDs, rótulos, espaçamento, listas, exceções, normalização de compatibilidade e camadas de publicação verificados.');
