@@ -9,9 +9,9 @@ const roleConfig={
   CASHIER:{personId:'person-cashier',staffId:'cashier1',membershipId:'m-cashier',name:'QA CASHIER'},
   VIEWER:{personId:'person-viewer',staffId:'viewer1',membershipId:'m-viewer',name:'QA VIEWER'}
 };
-// setup.html and checkin.html are intentionally exercised by their dedicated Chromium journeys.
-// Both are stateful screens with real persistence/selection flows; duplicating them in this
-// generic trial-click sweep is weaker coverage and can starve the browser event loop.
+// setup.html e checkin.html ficam nas jornadas Chromium dedicadas.
+// As funções são varridas em paralelo, mas cada rota de uma mesma função continua sequencial,
+// preservando isolamento de sessão e cobertura sem estourar o timeout global do workflow.
 const routes={
   TD:[
     'index.html','tournaments.html','tournament-settings.html',
@@ -133,22 +133,23 @@ async function sweepPage(page,role,route){
   pagesChecked++;
   console.log(`PASS: ${role} • ${route} • ${pageCount} controle(s) visível(is) acionável(is) em Chromium`);
 }
+async function sweepRole(browser,role,list){
+  const context=await contextFor(browser,role);
+  try{
+    for(const route of list){
+      const page=await context.newPage();
+      try{await sweepPage(page,role,route)}catch(e){
+        failures.push(`${role} • ${route}: ${cleanText(e.stack||e.message||e)}`);
+        console.error('FAIL:',role,route,cleanText(e.stack||e.message||e));
+      }finally{await page.close().catch(()=>{})}
+    }
+  }finally{await context.close().catch(()=>{})}
+}
 
 (async()=>{
   const browser=await chromium.launch({headless:true});
   try{
-    for(const [role,list] of Object.entries(routes)){
-      const context=await contextFor(browser,role);
-      try{
-        for(const route of list){
-          const page=await context.newPage();
-          try{await sweepPage(page,role,route)}catch(e){
-            failures.push(`${role} • ${route}: ${cleanText(e.stack||e.message||e)}`);
-            console.error('FAIL:',role,route,cleanText(e.stack||e.message||e));
-          }finally{await page.close().catch(()=>{})}
-        }
-      }finally{await context.close()}
-    }
+    await Promise.all(Object.entries(routes).map(([role,list])=>sweepRole(browser,role,list)));
   }finally{await browser.close()}
   if(failures.length){
     console.error(`BROWSER ACTIONABILITY E2E FAILED: ${failures.length} falha(s) após ${checked} controle(s) validados em ${pagesChecked} página(s).`);
