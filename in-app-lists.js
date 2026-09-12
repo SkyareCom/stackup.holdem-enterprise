@@ -66,7 +66,7 @@
 
   const visibleRows=select=>Math.max(2,Math.min(8,Math.max(1,select.options?.length||0)));
   const syncSelect=select=>{
-    if(!select||select.dataset.stackupInlineList!=='1')return;
+    if(!select||select.dataset.stackupInlineList!=='1'||select.disabled)return;
     if(select.hidden||select.closest('[hidden]'))return;
     select.classList.add('stackup-open-list');
     select.setAttribute('size',String(visibleRows(select)));
@@ -74,7 +74,7 @@
     select.setAttribute('aria-expanded','true');
   };
   const enhanceSelect=select=>{
-    if(!select||select.dataset.stackupInlineList==='1'||select.hidden||select.closest('[hidden]'))return;
+    if(!select||select.disabled||select.dataset.stackupInlineList==='1'||select.hidden||select.closest('[hidden]'))return;
     select.dataset.stackupInlineList='1';
     syncSelect(select);
     new MutationObserver(()=>syncSelect(select)).observe(select,{childList:true,subtree:true,attributes:true,attributeFilter:['disabled','selected','label','value','hidden','class','style']});
