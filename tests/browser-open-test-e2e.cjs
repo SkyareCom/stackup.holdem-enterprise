@@ -16,8 +16,10 @@ const BASE=process.env.STACKUP_E2E_BASE||'http://127.0.0.1:4173';
       if(!(await fn(page)))throw new Error(`Falha em ${path}`);
     }finally{await page.close().catch(()=>{})}
   };
-  await check('index.html',async page=>await page.evaluate(()=>window.StackupAuth?.OPEN_TEST_MODE===true)&&await page.locator('.sector-grid > a.sector-card:visible').count()===10);
-  await check('sector.html?s=operacao',async page=>!/login\.html/.test(page.url())&&await page.locator('.sector-options > a.sector-option:visible').count()>=5);
+  await check('index.html',async page=>await page.evaluate(()=>window.StackupAuth?.OPEN_TEST_MODE===true)&&await page.locator('.sector-grid > a.sector-card:visible').count()===12);
+  for(const sector of ['cadastrar','cadastrados','configuracoes','operacao','controle','resultados','ai','stations','financeiro','comunicacoes','transmissao','relatorios']){
+    await check(`sector.html?s=${sector}`,async page=>!/login\.html/.test(page.url())&&await page.locator('.sector-options > a.sector-option:visible').count()>=3);
+  }
   for(const path of ['setup.html','staff-hub.html','environments-hub.html','financial-hub.html','ranking-rules.html','screen.html','ai-link.html']){
     await check(path,async page=>!/login\.html/.test(page.url()));
   }
@@ -26,5 +28,5 @@ const BASE=process.env.STACKUP_E2E_BASE||'http://127.0.0.1:4173';
   if(errors.length)throw new Error(errors.join(' | '));
   await context.close();
   await browser.close();
-  console.log('BROWSER OPEN TEST ACCESS E2E PASS: home setorizada, hub operacional e rotas carregam sem diálogo nativo.');
+  console.log('BROWSER OPEN TEST ACCESS E2E PASS: 12 setores, hubs funcionais e rotas carregam sem diálogo nativo.');
 })().catch(async e=>{console.error(e.stack||e);process.exit(1)});
