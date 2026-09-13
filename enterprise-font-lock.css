@@ -1,0 +1,25 @@
+html:root body :is(#stackup-enterprise-font-lock, *){
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;
+  font-style:normal!important;
+}
+
+html:root body :is(#stackup-enterprise-font-lock, h1),
+html:root body :is(#stackup-enterprise-font-lock, h2),
+html:root body :is(#stackup-enterprise-font-lock, h3),
+html:root body :is(#stackup-enterprise-font-lock, .page-title),
+html:root body :is(#stackup-enterprise-font-lock, .hero-title),
+html:root body :is(#stackup-enterprise-font-lock, .display-title),
+html:root body :is(#stackup-enterprise-font-lock, .brand),
+html:root body :is(#stackup-enterprise-font-lock, .title),
+html:root body :is(#stackup-enterprise-font-lock, .card-title),
+html:root body :is(#stackup-enterprise-font-lock, .section-title),
+html:root body :is(#stackup-enterprise-font-lock, .sector-name),
+html:root body :is(#stackup-enterprise-font-lock, .sector-title),
+html:root body :is(#stackup-enterprise-font-lock, .stackup-word),
+html:root body :is(#stackup-enterprise-font-lock, .enterprise-word),
+html:root body :is(#stackup-enterprise-font-lock, #stackup-back),
+html:root body :is(#stackup-enterprise-font-lock, #stackup-home){
+  font-family:'Love Ya Like A Sister',cursive!important;
+  font-style:normal!important;
+  font-weight:400!important;
+}
