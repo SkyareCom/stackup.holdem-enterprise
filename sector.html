@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>STACKUP HOLD'EM ENTERPRISE</title>
+  <link rel="stylesheet" href="app-theme.css?v=brand0913">
+  <link rel="stylesheet" href="enterprise-brand.css?v=brand0913">
+</head>
+<body class="enterprise-sector">
+  <main class="sector-shell">
+    <header class="sector-header">
+      <div class="brand-logo" role="img" aria-label="STACKUP HOLD'EM"></div>
+      <div>
+        <h1 class="sector-title" id="sectorTitle">ENTERPRISE</h1>
+        <div class="sector-subtitle" id="sectorSubtitle">TOURNAMENT MANAGEMENT SYSTEM</div>
+      </div>
+    </header>
+    <section class="sector-options" id="sectorOptions" aria-label="OPÇÕES DO SETOR"></section>
+  </main>
+
+  <script src="production-init.js"></script>
+  <script src="shared.js"></script>
+  <script src="auth-engine.js"></script>
+  <script src="production-auth-cleanup.js"></script>
+  <script>
+  if(StackupAuth.guard()){
+    (()=> {
+      const sections={
+        cadastrar:{
+          title:'CADASTRAR',
+          subtitle:'LIGAS / CLUBES / HOME GAMES / STAFF / JOGADORES',
+          items:[
+            ['LIGAS / CLUBES / HOME GAMES','CADASTRAR AMBIENTE OPERACIONAL','environment-register.html'],
+            ['STAFF','CADASTRAR MEMBRO DA EQUIPE','staff-register.html'],
+            ['JOGADORES','CADASTRAR JOGADOR','player-register.html'],
+            ['TORNEIO / ETAPA','CADASTRAR NOVO TORNEIO OU ETAPA','setup.html']
+          ]
+        },
+        cadastrados:{
+          title:'CADASTRADOS',
+          subtitle:'DADOS E HISTÓRICOS CADASTRADOS',
+          items:[
+            ['LIGAS / CLUBES / HOME GAMES','AMBIENTES CADASTRADOS','environment-registered.html'],
+            ['STAFF','STAFF CADASTRADOS','staff-registered.html'],
+            ['JOGADORES','JOGADORES CADASTRADOS','players-registered.html'],
+            ['TORNEIOS','TORNEIOS CADASTRADOS E VALIDADOS','ready-tournaments.html'],
+            ['ETAPAS / HISTÓRICO','CENTRAL DE TORNEIOS E ETAPAS','tournament-center.html']
+          ]
+        },
+        configuracoes:{
+          title:'CONFIGURAÇÕES',
+          subtitle:'TORNEIO / ETAPA / VALORES / EQUIPE / PREMIAÇÕES / BLINDS',
+          items:[
+            ['TORNEIO / ETAPA','CONFIGURAÇÃO PRINCIPAL E ESTRUTURA','setup.html'],
+            ['VALORES DE PARTICIPAÇÃO','BUY-IN / REBUY / RE-ENTRY / ADD-ON / BÔNUS','tournament-settings.html'],
+            ['FINANCEIRO','MOEDAS / TAXAS / REGRAS DE FECHAMENTO','finance-settings.html'],
+            ['MESA FINAL','ESTRUTURA E DEALERS AUTORIZADOS','final-table-settings.html'],
+            ['TRANSMISSÃO','TELAS / CAST / CONFIGURAÇÃO VISUAL','screen-settings.html'],
+            ['ALERTAS E MENSAGENS','ALERTAS OPERACIONAIS E DE TRANSMISSÃO','screen-alerts.html'],
+            ['IDIOMA','PORTUGUÊS / INGLÊS / ESPANHOL','language-settings.html'],
+            ['RANKING','CRITÉRIOS E REGRAS DE PONTUAÇÃO','ranking-rules.html']
+          ]
+        },
+        operacao:{
+          title:'OPERAÇÃO E GESTÃO',
+          subtitle:'INSCRIÇÕES / TAXAS / REBUYS / REENTRIES / ADD-ONS / BÔNUS',
+          items:[
+            ['INSCRIÇÕES','PRÉ-INSCRIÇÃO DE JOGADORES','pre-registration.html'],
+            ['CHECK-IN / BUY-IN','ENTRADA E VALIDAÇÃO DO JOGADOR','checkin.html'],
+            ['REBUYS / REENTRIES / ADD-ONS','OPERAÇÕES DO TORNEIO','control.html'],
+            ['TAXAS DE JOGO','TRANSAÇÕES E LANÇAMENTOS','tournament-player-transactions.html'],
+            ['JOGADORES','ATIVOS / ELIMINADOS / MOVIMENTAÇÕES','tournament-players.html'],
+            ['MESAS','MESAS / ASSENTOS / BALANCEAMENTO','tournament-tables.html'],
+            ['BALANCEAMENTO','MOVIMENTAÇÃO E QUEBRA DE MESAS','balancing.html'],
+            ['COMUNICAÇÕES','WHATSAPP / EMAIL / MENSAGENS','communication-hub.html'],
+            ['CRM','RELACIONAMENTO E FIDELIDADE','marketing.html']
+          ]
+        },
+        controle:{
+          title:'CONTROLE DO TORNEIO',
+          subtitle:'RELÓGIO / NÍVEIS / MESAS / JOGADORES / ENCERRAMENTO',
+          items:[
+            ['CONTROLE AO VIVO','RELÓGIO / NÍVEIS / PAUSAS / COMANDOS','control.html'],
+            ['JOGADORES ATIVOS','FIELD / PLAYERS LEFT / POSIÇÕES','tournament-active-players.html'],
+            ['ELIMINADOS','CLASSIFICAÇÃO E HISTÓRICO','tournament-eliminated-players.html'],
+            ['PRONTIDÃO','VALIDAÇÕES ANTES DA OPERAÇÃO','tournament-readiness.html'],
+            ['ENCERRAMENTO','FECHAMENTO DA ETAPA OU TORNEIO','tournament-close.html']
+          ]
+        },
+        resultados:{
+          title:'RANKING E RESULTADOS',
+          subtitle:'PONTUAÇÃO / RESULTADOS / TEMPORADAS / HISTÓRICO',
+          items:[
+            ['RANKING','CENTRAL DE RANKINGS','ranking.html'],
+            ['POR TORNEIO','CLASSIFICAÇÃO E PONTUAÇÃO DO TORNEIO','ranking-tournament.html'],
+            ['POR LIGA','LIGA / TEMPORADA / SEMESTRE / ANO','ranking-general.html'],
+            ['CRITÉRIOS','REGRAS DE PONTUAÇÃO E DESEMPATE','ranking-rules.html'],
+            ['RESULTADOS E HISTÓRICO','CENTRAL DE TORNEIOS ENCERRADOS','tournament-center.html']
+          ]
+        },
+        ai:{
+          title:'AI ASSISTANCE',
+          subtitle:'CADASTROS / ESTRUTURAS / CHIP COUNT / ASSISTENTE OPERACIONAL',
+          items:[
+            ['CADASTRAR JOGADOR','CADASTRO INTELIGENTE','smart-registration.html'],
+            ['RECONHECIMENTO','RECONHECIMENTO INTELIGENTE','recognition.html'],
+            ['CADASTRAR ESTRUTURA','IMPORTAR E RECONHECER ESTRUTURA','structure-import.html'],
+            ['CHIP COUNT','CONTAGEM ASSISTIDA DE FICHAS','chip-count-ai.html'],
+            ['ASSISTENTE OPERACIONAL','COMANDOS E APOIO À EQUIPE','bot.html']
+          ]
+        },
+        stations:{
+          title:'STATIONS',
+          subtitle:'STAFF / DEALER / PLAYER',
+          items:[
+            ['STAFF STATION','GESTÃO OPERACIONAL DO TORNEIO','tournament-manager.html'],
+            ['DEALER STATION','OPERAÇÃO DO DEALER','dealer.html'],
+            ['PLAYER STATION','INFORMAÇÕES DO TORNEIO PARA O JOGADOR','player-live.html']
+          ]
+        },
+        financeiro:{
+          title:'FINANCEIRO',
+          subtitle:'CAIXA / FECHAMENTO / VALORES POR JOGADOR / STAFF',
+          items:[
+            ['CENTRAL FINANCEIRA','CAIXA / PAGAMENTOS / CRÉDITOS','financial-hub.html'],
+            ['CAIXA DO EVENTO','BUY-INS / REENTRADAS / REBUYS / ADD-ONS','finance.html'],
+            ['PLAYER CREDIT','SALDOS E MOVIMENTAÇÕES POR JOGADOR','wallet.html'],
+            ['BOUNTY','CONTROLE FINANCEIRO DE BOUNTY / PKO','bounty.html'],
+            ['FECHAMENTO','FECHAMENTO DA ETAPA OU TORNEIO','tournament-close.html'],
+            ['CONFIGURAÇÕES','MOEDAS / TAXAS / REGRAS','finance-settings.html']
+          ]
+        },
+        transmissao:{
+          title:'TRANSMISSÃO',
+          subtitle:'CAST / TV / MESA FINAL / ALERTAS / TELAS',
+          items:[
+            ['CENTRAL DE TRANSMISSÃO','CAST / TV / MESA FINAL','screen.html'],
+            ['SALA DE TRANSMISSÃO','CÓDIGO E DISPOSITIVOS CONECTADOS','transmission-room.html'],
+            ['CONFIGURAÇÕES DE TELA','FUNDO / CORES / BARRA DE PROGRESSO','screen-settings.html'],
+            ['ALERTAS E RECADOS','AVISOS E EVENTOS NA TRANSMISSÃO','screen-alerts.html'],
+            ['CONECTAR TELA','TV / FIRE STICK / NAVEGADOR','tv-connect.html'],
+            ['CAST OFICIAL','TRANSMISSÃO OFICIAL DO TORNEIO','cast-v2.html']
+          ]
+        }
+      };
+      const key=new URLSearchParams(location.search).get('s')||'';
+      const section=sections[key]||sections.operacao;
+      document.getElementById('sectorTitle').textContent=section.title;
+      document.getElementById('sectorSubtitle').textContent=section.subtitle;
+      document.title=`${section.title} • STACKUP HOLD'EM ENTERPRISE`;
+      const root=document.getElementById('sectorOptions');
+      root.innerHTML=section.items.map(([name,desc,href])=>
+        `<a class="sector-option" href="${href}"><strong>${name}</strong><span>${desc}</span></a>`
+      ).join('');
+    })();
+  }
+  </script>
+  <script src="app-theme.js?v=brand0913"></script>
+</body>
+</html>
