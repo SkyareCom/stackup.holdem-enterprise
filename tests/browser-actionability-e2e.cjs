@@ -3,15 +3,18 @@ const { chromium } = require('playwright');
 const BASE=process.env.STACKUP_E2E_BASE||'http://127.0.0.1:4173';
 const failures=[];
 let checked=0,pagesChecked=0;
+
 const roleConfig={
   TD:{personId:'person-td',staffId:'td1',membershipId:'m-td',name:'QA TD'},
   FLOOR:{personId:'person-floor',staffId:'floor1',membershipId:'m-floor',name:'QA FLOOR'},
   CASHIER:{personId:'person-cashier',staffId:'cashier1',membershipId:'m-cashier',name:'QA CASHIER'},
   VIEWER:{personId:'person-viewer',staffId:'viewer1',membershipId:'m-viewer',name:'QA VIEWER'}
 };
-// setup.html e checkin.html ficam nas jornadas Chromium dedicadas.
-// As funções são varridas em paralelo, mas cada rota de uma mesma função continua sequencial,
-// preservando isolamento de sessão e cobertura sem estourar o timeout global do workflow.
+
+// setup.html e checkin.html possuem jornadas Chromium dedicadas.
+// Esta varredura mantém a mesma cobertura de rotas/funções, mas usa hit-test DOM real
+// dentro do Chromium em vez de trial-click por controle, evitando o timeout artificial
+// de centenas de controles em telas grandes como screen-settings.html.
 const routes={
   TD:[
     'index.html','tournaments.html','tournament-settings.html',
@@ -30,6 +33,7 @@ const routes={
   ],
   VIEWER:['index.html','tournament-center.html','ready-tournaments.html','ranking.html','ranking-tournament.html','ranking-general.html']
 };
+
 function seed(role){
   const cfg=roleConfig[role],now=Date.now();
   const staff=[
@@ -64,6 +68,7 @@ function seed(role){
   const ready=[{id:'event-e2e',name:'E2E MAIN',status:'VALIDATED',validatedAt:now,dealerIds:['dealer1'],staffIds:['td1','floor1','cashier1','viewer1','dealer1'],data:{clubId:'club-a',clubName:'QA CLUB A',gameType:'NLH',tournamentFormat:'REGULAR',seatsPerTable:9,buyin:500,buyinChips:30000,startingStack:30000,structure,finalTableStructureMode:'TIMER',finalTableHandsPerLevel:10}}];
   return {role,state,session,ready};
 }
+
 async function contextFor(browser,role){
   const context=await browser.newContext({viewport:{width:412,height:915}});
   const data=seed(role);
@@ -80,30 +85,16 @@ async function contextFor(browser,role){
   },data);
   return context;
 }
-function cleanText(v){return String(v||'').replace(/\s+/g,' ').trim().slice(0,90)}
-async function describe(locator,index){
-  return locator.evaluate((el,i)=>{
-    const txt=(el.innerText||el.textContent||el.getAttribute('aria-label')||el.getAttribute('title')||'').replace(/\s+/g,' ').trim().slice(0,90);
-    const id=el.id?`#${el.id}`:'';
-    const tag=el.tagName.toLowerCase();
-    const href=el.getAttribute('href');
-    return `${tag}${id}${href?`[href="${href}"]`:''}${txt?` «${txt}»`:''} [${i}]`;
-  },index).catch(()=>`controle [${index}]`);
-}
-async function intentionallyDisabled(locator){
-  return locator.evaluate(el=>{
-    if(el.matches(':disabled,[aria-disabled="true"],[inert]'))return true;
-    if(el.closest('[inert],[aria-disabled="true"],.disabled'))return true;
-    const fs=el.closest('fieldset[disabled]');
-    return !!fs;
-  }).catch(()=>true);
-}
+
+function cleanText(v){return String(v||'').replace(/\s+/g,' ').trim().slice(0,120)}
+
 async function sweepPage(page,role,route){
   const errors=[];
   page.on('pageerror',e=>errors.push(`pageerror @ ${page.url()}: ${e.message}`));
   page.on('console',m=>{if(m.type()==='error')errors.push(`console @ ${page.url()}: ${m.text()}`)});
+
   await page.goto(`${BASE}/${route}`,{waitUntil:'domcontentloaded',timeout:15000});
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(250);
   const expected=new URL(`${BASE}/${route}`).pathname.split('/').pop();
   const actual=new URL(page.url()).pathname.split('/').pop();
   if(actual!==expected){
@@ -111,28 +102,53 @@ async function sweepPage(page,role,route){
     console.error('FAIL:',role,route,'redirecionou para',actual||page.url());
     return;
   }
-  const controls=page.locator('button, a[href], [role="button"]');
-  const count=await controls.count();
-  let pageCount=0;
-  for(let i=0;i<count;i++){
-    const locator=controls.nth(i);
-    if(!(await locator.isVisible().catch(()=>false)))continue;
-    if(await intentionallyDisabled(locator))continue;
-    const desc=await describe(locator,i);
-    try{
-      await locator.click({trial:true,timeout:2500});
-      checked++;pageCount++;
-    }catch(e){
-      failures.push(`${role} • ${route} • ${desc}: ${cleanText(e.message)}`);
-      console.error('FAIL:',role,route,desc,cleanText(e.message));
-    }
-  }
-  if(errors.length){
-    errors.forEach(e=>{failures.push(`${role} • ${route} • ${e}`);console.error('FAIL:',role,route,e)});
-  }
+
+  const result=await page.evaluate(()=>{
+    const all=[...document.querySelectorAll('button,a[href],[role="button"]')];
+    const bad=[];
+    let count=0;
+    const label=(el,i)=>{
+      const txt=(el.innerText||el.textContent||el.getAttribute('aria-label')||el.getAttribute('title')||'').replace(/\s+/g,' ').trim().slice(0,90);
+      const id=el.id?`#${el.id}`:'';
+      const href=el.getAttribute('href');
+      return `${el.tagName.toLowerCase()}${id}${href?`[href="${href}"]`:''}${txt?` «${txt}»`:''} [${i}]`;
+    };
+    const visible=el=>{
+      const s=getComputedStyle(el),r=el.getBoundingClientRect();
+      return s.display!=='none'&&s.visibility!=='hidden'&&s.opacity!=='0'&&r.width>0&&r.height>0;
+    };
+    const disabled=el=>el.matches(':disabled,[aria-disabled="true"],[inert]')||!!el.closest('[inert],[aria-disabled="true"],.disabled,fieldset[disabled]');
+
+    all.forEach((el,i)=>{
+      if(!visible(el)||disabled(el))return;
+      count++;
+      el.scrollIntoView({block:'center',inline:'center'});
+      const r=el.getBoundingClientRect();
+      const x=Math.min(innerWidth-1,Math.max(0,r.left+r.width/2));
+      const y=Math.min(innerHeight-1,Math.max(0,r.top+r.height/2));
+      const top=document.elementFromPoint(x,y);
+      const pointer=getComputedStyle(el).pointerEvents;
+      const hit=!!top&&(top===el||el.contains(top));
+      if(pointer==='none'||!hit){
+        bad.push(`${label(el,i)} :: pointer-events=${pointer}; hit=${top?top.tagName.toLowerCase():'none'}`);
+      }
+    });
+    return {count,bad};
+  });
+
+  checked+=result.count;
   pagesChecked++;
-  console.log(`PASS: ${role} • ${route} • ${pageCount} controle(s) visível(is) acionável(is) em Chromium`);
+  result.bad.forEach(msg=>{
+    failures.push(`${role} • ${route} • ${msg}`);
+    console.error('FAIL:',role,route,cleanText(msg));
+  });
+  errors.forEach(e=>{
+    failures.push(`${role} • ${route} • ${e}`);
+    console.error('FAIL:',role,route,cleanText(e));
+  });
+  console.log(`PASS: ${role} • ${route} • ${result.count} controle(s) visível(is) com hit-test real em Chromium`);
 }
+
 async function sweepRole(browser,role,list){
   const context=await contextFor(browser,role);
   try{
@@ -152,9 +168,9 @@ async function sweepRole(browser,role,list){
     await Promise.all(Object.entries(routes).map(([role,list])=>sweepRole(browser,role,list)));
   }finally{await browser.close()}
   if(failures.length){
-    console.error(`BROWSER ACTIONABILITY E2E FAILED: ${failures.length} falha(s) após ${checked} controle(s) validados em ${pagesChecked} página(s).`);
+    console.error(`BROWSER ACTIONABILITY E2E FAILED: ${failures.length} falha(s) após ${checked} controle(s) verificados em ${pagesChecked} página(s).`);
     failures.forEach(x=>console.error('- '+x));
     process.exit(1);
   }
-  console.log(`BROWSER ACTIONABILITY E2E PASS: ${checked} controle(s) visíveis/habilitados passaram hit-test real (trial click) em ${pagesChecked} página(s), sem disparar ações.`);
+  console.log(`BROWSER ACTIONABILITY E2E PASS: ${checked} controle(s) visíveis/habilitados passaram hit-test DOM real em ${pagesChecked} página(s).`);
 })().catch(e=>{console.error(e.stack||e);process.exit(1)});
