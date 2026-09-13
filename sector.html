@@ -173,9 +173,18 @@
       document.getElementById('sectorSubtitle').textContent=section.subtitle;
       document.title=`${section.title} • STACKUP HOLD'EM ENTERPRISE`;
       const root=document.getElementById('sectorOptions');
-      root.innerHTML=section.items.map(([name,desc,href])=>
-        `<a class="sector-option" href="${href}"><strong>${name}</strong><span>${desc}</span></a>`
-      ).join('');
+      root.replaceChildren();
+      section.items.forEach(([name,desc,href])=>{
+        const a=document.createElement('a');
+        a.className='sector-option';
+        a.href=href;
+        const strong=document.createElement('strong');
+        strong.textContent=name;
+        const span=document.createElement('span');
+        span.textContent=desc;
+        a.append(strong,span);
+        root.appendChild(a);
+      });
     })();
   }
   </script>
