@@ -3,7 +3,7 @@ const read=f=>fs.readFileSync(f,'utf8');
 const index=read('index.html'),tournaments=read('tournaments.html'),finance=read('financial-hub.html'),ranking=read('ranking.html'),ai=read('ai-link.html'),readyHtml=read('ready-tournaments.html'),ready=read('ready-tournaments.js');
 const failures=[];
 const ok=(name,cond)=>{if(cond)console.log('PASS:',name);else failures.push(name)};
-ok('Menu principal filtra módulos por função autenticada',index.includes("const role=String(session.role||'').toUpperCase()")&&index.includes('card.hidden=!allowed.has(href)'));
+ok('Menu principal filtra setores por função autenticada',index.includes("const role=String(session.role||'').toUpperCase()")&&index.includes("card.hidden=!roles.includes(role)"));
 ok('TORNEIOS esconde cards sem a permissão real',tournaments.includes('data-permission="SETUP"')&&tournaments.includes('data-permission="READINESS"')&&tournaments.includes('card.hidden=!StackupAuth.can(card.dataset.permission)'));
 ok('FINANCEIRO não oferece bounty para CASHIER sem RESULTS',finance.includes('href="bounty.html" data-permission="RESULTS"')&&finance.includes('card.hidden=!StackupAuth.can(card.dataset.permission)'));
 ok('RANKING mantém critérios/regras apenas para administração',ranking.includes('data-ranking-admin="1"')&&ranking.includes("!['OWNER','GESTOR'].includes(role)"));
