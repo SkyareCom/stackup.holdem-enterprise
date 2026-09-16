@@ -23,3 +23,110 @@ html:root body :is(#stackup-enterprise-font-lock, #stackup-home){
   font-style:normal!important;
   font-weight:400!important;
 }
+
+/*
+ * ENTERPRISE UI RHYTHM LOCK
+ * Keeps typography/brand intact while enforcing one spacing system on
+ * administrative screens. Loaded after app-theme.css and enterprise-brand.css.
+ */
+:root{
+  --enterprise-page-title-gap:24px;
+  --enterprise-structure-gap:28px;
+  --enterprise-section-gap:24px;
+  --enterprise-field-gap:14px;
+  --enterprise-label-gap:8px;
+  --enterprise-card-pad-x:20px;
+  --enterprise-card-pad-y:20px;
+  --enterprise-control-pad-x:16px;
+}
+
+html:root body *,
+html:root body *::before,
+html:root body *::after{
+  box-sizing:border-box!important;
+}
+
+/* Main screen title -> first structure/card: always the same distance. */
+html:root body main > :is(h1,h2,.title,.page-title,.module-title,.screen-title){
+  margin-top:0!important;
+  margin-bottom:var(--enterprise-page-title-gap)!important;
+}
+html:root body main > :is(h1,h2,.title,.page-title,.module-title,.screen-title)
++ :is(.card,.panel,.form-card,.settings-card,.rate-card,.structure-card,.data-card,.fields-card,form,.formGrid,.grid,[class$="-card"]){
+  margin-top:0!important;
+}
+
+/* Structure -> next title: removes the large, inconsistent blank bands. */
+html:root body main > :is(.card,.panel,.form-card,.settings-card,.rate-card,.structure-card,.data-card,.fields-card,form,[class$="-card"])
++ :is(h1,h2,.title,.page-title,.module-title,.screen-title){
+  margin-top:var(--enterprise-structure-gap)!important;
+}
+
+/* Bordered content structures need real breathing room around text. */
+html:root body main :is(.card,.panel,.form-card,.settings-card,.rate-card,.structure-card,.data-card,.fields-card,[class$="-card"]):not(.sector-card):not(.module-card):not(.summary-card):not(.count-card){
+  padding-left:var(--enterprise-card-pad-x)!important;
+  padding-right:var(--enterprise-card-pad-x)!important;
+  padding-top:var(--enterprise-card-pad-y)!important;
+  padding-bottom:var(--enterprise-card-pad-y)!important;
+  min-width:0!important;
+}
+
+/* Prevent labels/headings from sitting on the card border. */
+html:root body main :is(.card,.panel,.form-card,.settings-card,.rate-card,.structure-card,.data-card,.fields-card,[class$="-card"]):not(.sector-card):not(.module-card)
+> :is(.section,.section-title,.itemTitle,label:not(.check)):first-child{
+  margin-top:0!important;
+}
+
+html:root body :is(.section,.section-title,.itemTitle){
+  margin-top:var(--enterprise-section-gap)!important;
+  margin-bottom:10px!important;
+  line-height:1.35!important;
+}
+
+html:root body label:not(.check):not(.stackup-checkbox):not(.stackup-radio){
+  line-height:1.35!important;
+}
+html:root body :is(.field,.form-field,.formGroup,.form-group,.input-group,.control-group) > label:not(.check){
+  display:block!important;
+  margin:0 0 var(--enterprise-label-gap)!important;
+}
+
+/* All common field grids use the same vertical/horizontal rhythm. */
+html:root body :is(.formGrid,.grid,.grid2,.grid3,.filters,.checks,.actions,.cards,.items,.payGrid,.idGrid,.tables,.button-row,.btn-row,.controls,.toolbar,.valueGrid,.singleGrid,.rateRow,.field-grid,.fields-grid,.form-grid){
+  gap:var(--enterprise-field-gap)!important;
+}
+
+/* Text inside fields/buttons can never touch the outline. */
+html:root body input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]),
+html:root body select,
+html:root body textarea{
+  padding-left:var(--enterprise-control-pad-x)!important;
+  padding-right:var(--enterprise-control-pad-x)!important;
+  line-height:1.35!important;
+}
+html:root body :is(button,.btn,.button,[role="button"],input[type="button"],input[type="submit"],input[type="reset"]){
+  padding-left:14px!important;
+  padding-right:14px!important;
+}
+html:root body .check{
+  padding:12px 14px!important;
+  gap:12px!important;
+  line-height:1.35!important;
+}
+
+/* Stacked fields/blocks never collapse against each other. */
+html:root body :is(.field,.form-field,.formGroup,.form-group,.input-group,.control-group) + :is(.field,.form-field,.formGroup,.form-group,.input-group,.control-group){
+  margin-top:var(--enterprise-field-gap)!important;
+}
+
+@media(max-width:700px){
+  :root{
+    --enterprise-page-title-gap:22px;
+    --enterprise-structure-gap:26px;
+    --enterprise-section-gap:22px;
+    --enterprise-field-gap:12px;
+    --enterprise-card-pad-x:18px;
+    --enterprise-card-pad-y:18px;
+    --enterprise-control-pad-x:16px;
+  }
+}
