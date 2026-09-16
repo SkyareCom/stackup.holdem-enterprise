@@ -26,6 +26,7 @@ function check(name,ok,detail=''){checks++;if(ok)console.log('PASS:',name);else{
     check('Cabeçalho acompanha USAR',(await page.locator('#activeEnvironmentName').innerText()).includes('LIGA B'));
 
     await chooseAction('edit','league-b');
+    console.log('DEBUG EDIT URL AFTER CONFIRM:',page.url());
     await page.waitForURL(/environment-register\.html\?edit=league-b/,{timeout:5000});
     await page.locator('#newClubName').waitFor({state:'visible',timeout:5000});
     check('EDITAR abre cadastro de origem',(await page.locator('.title').innerText()).includes('EDITAR AMBIENTE'));
