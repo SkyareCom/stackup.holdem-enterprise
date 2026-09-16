@@ -7,185 +7,100 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>STACKUP HOLD'EM ENTERPRISE</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Love+Ya+Like+A+Sister&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg:#010403;
-      --bg2:#03140d;
-      --emerald:#087447;
-      --emerald-bright:#16a968;
-      --emerald-soft:#0b5a3a;
-      --gold:#d2a84b;
-      --white:#f6f7f6;
-      --line:rgba(27,152,94,.52);
-      --card1:rgba(5,25,17,.94);
-      --card2:rgba(1,8,5,.98);
-    }
-    *{box-sizing:border-box}
-    html{background:#000}
-    body{
-      margin:0;
-      min-height:100vh;
-      color:var(--white);
-      background:
-        radial-gradient(circle at 50% -8%,rgba(9,117,71,.34),transparent 34%),
-        radial-gradient(circle at 8% 55%,rgba(5,70,44,.13),transparent 30%),
-        radial-gradient(circle at 92% 60%,rgba(5,70,44,.11),transparent 30%),
-        linear-gradient(180deg,#020806 0%,#010403 52%,#000 100%);
-      font-family:'Love Ya Like A Sister',cursive;
-      overflow-x:hidden;
-    }
-    body::before{
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      background:
-        linear-gradient(105deg,transparent 0 44%,rgba(20,126,78,.035) 50%,transparent 56%),
-        repeating-linear-gradient(0deg,rgba(255,255,255,.012) 0 1px,transparent 1px 5px);
-      opacity:.7;
-    }
-    .home{
-      position:relative;
-      z-index:1;
-      width:min(760px,100%);
-      margin:0 auto;
-      padding:28px 16px 34px;
-    }
-    .hero{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      text-align:center;
-      padding:2px 4px 22px;
-    }
-    .logo{
-      width:132px;
-      height:132px;
-      border-radius:50%;
-      object-fit:cover;
-      display:block;
-      margin:0 auto 12px;
-      box-shadow:
-        0 0 0 1px rgba(210,168,75,.5),
-        0 0 28px rgba(9,116,71,.32);
-    }
-    .brand{
-      margin:0;
-      font-size:clamp(28px,8vw,42px);
-      line-height:.95;
-      letter-spacing:.02em;
-      font-weight:400;
-      color:#fff;
-      text-shadow:0 2px 16px rgba(0,0,0,.55);
-    }
-    .enterprise{
-      margin-top:2px;
-      font-size:clamp(26px,7.2vw,39px);
-      line-height:1;
-      color:var(--emerald-bright);
-      text-shadow:0 0 16px rgba(14,122,73,.2);
-    }
-    .system{
-      margin-top:12px;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      font-size:10px;
-      font-weight:700;
-      letter-spacing:.25em;
-      color:#e8eae9;
-      text-transform:uppercase;
-    }
-    .sub{
-      margin-top:8px;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      font-size:10px;
-      font-weight:600;
-      letter-spacing:.18em;
-      color:#9daaa3;
-      text-transform:uppercase;
-    }
-    .sector-grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:10px;
-      width:100%;
-    }
-    .sector-card{
-      position:relative;
-      min-width:0;
-      min-height:108px;
-      display:flex;
-      align-items:center;
-      gap:11px;
-      padding:14px 12px;
-      text-decoration:none;
-      color:#fff;
-      border:1px solid var(--line);
-      border-radius:16px;
-      background:
-        radial-gradient(circle at 15% 15%,rgba(12,100,62,.16),transparent 38%),
-        linear-gradient(145deg,var(--card1),var(--card2));
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.025),
-        0 10px 28px rgba(0,0,0,.18);
-      -webkit-tap-highlight-color:transparent;
-      cursor:pointer;
-      transition:transform .12s ease,border-color .12s ease,box-shadow .12s ease;
-      outline:none;
-    }
-    .sector-card:focus-visible{
-      border-color:var(--gold);
-      box-shadow:0 0 0 2px rgba(210,168,75,.18);
-    }
-    .sector-card:active{
-      transform:scale(.985);
-      border-color:rgba(210,168,75,.7);
-      box-shadow:inset 0 0 22px rgba(9,116,71,.12);
-    }
-    .sector-icon{
-      flex:0 0 46px;
-      width:46px;
-      height:46px;
-      border-radius:50%;
-      display:grid;
-      place-items:center;
-      border:1px solid rgba(22,169,104,.72);
-      color:var(--gold);
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      font-size:18px;
-      font-weight:800;
-      background:rgba(0,0,0,.28);
-      box-shadow:inset 0 0 18px rgba(7,116,71,.08);
-    }
-    .sector-name{
-      min-width:0;
-      flex:1;
-      font-size:clamp(15px,4.1vw,20px);
-      line-height:1.05;
-      letter-spacing:.01em;
-      overflow-wrap:anywhere;
-    }
-    .arrow{
-      flex:0 0 auto;
-      color:#8db7a1;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      font-size:23px;
-      font-weight:300;
-      line-height:1;
-    }
-    .sector-card[hidden]{display:none!important}
-    @media(max-width:380px){
-      .home{padding-left:10px;padding-right:10px}
-      .sector-grid{gap:8px}
-      .sector-card{padding:12px 9px;gap:8px;min-height:104px}
-      .sector-icon{width:40px;height:40px;flex-basis:40px;font-size:16px}
-      .sector-name{font-size:14px}
-    }
-  </style>
+  <link rel="stylesheet" href="app-theme.css?v=brand0913b">
+  <link rel="stylesheet" href="enterprise-brand.css?v=brand0913b">
+  <link rel="stylesheet" href="enterprise-font-lock.css?v=spacing0916">
 </head>
-<body>
-  <main class="home">
-    <header class="hero">
-      <img class="logo" alt="STACKUP HOLD'EM" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0
+<body class="enterprise-home">
+  <main class="enterprise-shell">
+    <header class="brand-hero">
+      <div class="brand-logo" role="img" aria-label="STACKUP HOLD'EM"></div>
+      <h1 class="stackup-word">STACKUP HOLD'EM</h1>
+      <div class="enterprise-word">ENTERPRISE</div>
+      <div class="management-line">TOURNAMENT MANAGEMENT SYSTEM</div>
+      <p class="management-sub">GESTÃO DE TORNEIOS DE POKER</p>
+    </header>
+
+    <section class="sector-grid" aria-label="12 SETORES DO ENTERPRISE">
+      <a class="sector-card" href="sector.html?s=cadastrar" data-roles="OWNER,GESTOR">
+        <div class="sector-icon" aria-hidden="true">+</div>
+        <div class="sector-copy"><div class="sector-kicker">CADASTRO</div><div class="sector-name">CADASTRAR</div><div class="sector-desc">LIGAS / CLUBES / HOME / STAFF / JOGADORES</div></div><div class="sector-arrow" aria-hidden="true">›</div>
+      </a>
+
+      <a class="sector-card" href="sector.html?s=cadastrados" data-roles="OWNER,GESTOR,TD,FLOOR,CASHIER">
+        <div class="sector-icon" aria-hidden="true">≡</div>
+        <div class="sector-copy"><div class="sector-kicker">DADOS</div><div class="sector-name">CADASTRADOS</div><div class="sector-desc">LIGAS / CLUBES / TORNEIOS / ETAPAS / STAFF / JOGADORES</div></div><div class="sector-arrow" aria-hidden="true">›</div>
+      </a>
+
+      <a class="sector-card" href="sector.html?s=configuracoes" data-roles="OWNER,GESTOR,TD">
+        <div class="sector-icon" aria-hidden="true">⚙</div>
+        <div class="sector-copy"><div class="sector-kicker">AJUSTES</div><div class="sector-name">CONFIGURAÇÕES</div><div class="sector-desc">TORNEIO / ETAPA / VALORES / BLINDS / PREMIAÇÕES / TRANSMISSÃO</div></div><div class="sector-arrow" aria-hidden="true">›</div>
+      </a>
+
+      <a class="sector-card" href="sector.html?s=operacao" data-roles="OWNER,GESTOR,TD,FLOOR">
+        <div class="sector-icon" aria-hidden="true">▶</div>
+        <div class="sector-copy"><div class="sector-kicker">OPERAÇÃO</div><div class="sector-name">OPERAÇÃO E GESTÃO</div><div class="sector-desc">INSCRIÇÕES / TAXAS / REBUYS / REENTRIES / ADD-ONS / BÔNUS</div></div><div class="sector-arrow" aria-hidden="true">›</div>
+      </a>
+
+      <a class="sector-card" href="sector.html?s=controle" data-roles="OWNER,GESTOR,TD,FLOOR">
+        <div class="sector-icon" aria-hidden="true">◷</div>
+        <div class="sector-copy"><div class="sector-kicker">COMPETIÇÃO</div><div class="sector-name">CONTROLE DO TORNEIO</div><div class="sector-desc">RELÓGIO / NÍVEIS / MESAS / JOGADORES / ENCERRAMENTO</div></div><div class="sector-arrow" aria-hidden="true">›</div>
+      </a>
+
+      <a class="sector-card" href="sector.html?s=resultados" data-roles="OWNER,GESTOR,TD,VIEWER">
+        <div class="sector-icon" aria-hidden="true">▥</div>
+        <div class="sector-copy"><div class="sector-kicker">RESULTADOS</div><div class="sector-name">RANKING E RESULTADOS</div><div class="sector-desc">PONTUAÇÃO / RESULTADOS / TEMPORADAS / HISTÓRICO</div></div><div class="sector-arrow" aria-hidden="true">›</div>
+      </a>
+
+      <a class="sector-card" href="sector.html?s=ai" data-roles="OWNER,GESTOR,TD">
+        <div class="sector-icon" aria-hidden="true">AI</div>
+        <div class="sector-copy"><div class="sector-kicker">INTELIGÊNCIA</div><div class="sector-name">AI ASSISTANCE</div><div class="sector-desc">CADASTROS / ESTRUTURAS / CHIP COUNT / ASSISTENTE</div></div><div class="sector-arrow" aria-hidden="true">›</div>
+      </a>
+
+      <a class="sector-card" href="sector.html?s=stations" data-roles="OWNER,GESTOR,TD,FLOOR,CASHIER">
+        <div class="sector-icon" aria-hidden="true">▣</div>
+        <div class="sector-copy"><div class="sector-kicker">ESTAÇÕES</div><div class="sector-name">STATIONS</div><div class="sector-desc">STAFF / DEALER / PLAYER STATIONS</div></div><div class="sector-arrow" aria-hidden="true">›</div>
+      </a>
+
+      <a class="sector-card" href="sector.html?s=financeiro" data-roles="OWNER,GESTOR,CASHIER">
+        <div class="sector-icon" aria-hidden="true">$</div>
+        <div class="sector-copy"><div class="sector-kicker">CONTROLE</div><div class="sector-name">FINANCEIRO</div><div class="sector-desc">CAIXA / FECHAMENTO / VALORES POR JOGADOR / STAFF</div></div><div class="sector-arrow" aria-hidden="true">›</div>
+      </a>
+
+      <a class="sector-card" href="sector.html?s=comunicacoes" data-roles="OWNER,GESTOR,TD,FLOOR">
+        <div class="sector-icon" aria-hidden="true">✉</div>
+        <div class="sector-copy"><div class="sector-kicker">RELACIONAMENTO</div><div class="sector-name">COMUNICAÇÕES E CRM</div><div class="sector-desc">WHATSAPP / EMAIL / ALERTAS / CAMPANHAS / FIDELIDADE</div></div><div class="sector-arrow" aria-hidden="true">›</div>
+      </a>
+
+      <a class="sector-card" href="sector.html?s=transmissao" data-roles="OWNER,GESTOR,TD">
+        <div class="sector-icon" aria-hidden="true">◉</div>
+        <div class="sector-copy"><div class="sector-kicker">PRODUÇÃO</div><div class="sector-name">TRANSMISSÃO</div><div class="sector-desc">CAST / TV / MESA FINAL / ALERTAS / TELAS</div></div><div class="sector-arrow" aria-hidden="true">›</div>
+      </a>
+
+      <a class="sector-card" href="sector.html?s=relatorios" data-roles="OWNER,GESTOR,TD">
+        <div class="sector-icon" aria-hidden="true">✓</div>
+        <div class="sector-copy"><div class="sector-kicker">CONTROLE</div><div class="sector-name">RELATÓRIOS E AUDITORIA</div><div class="sector-desc">HISTÓRICOS / FECHAMENTOS / MOVIMENTAÇÕES / VALIDAÇÕES</div></div><div class="sector-arrow" aria-hidden="true">›</div>
+      </a>
+    </section>
+  </main>
+
+  <script src="production-init.js"></script>
+  <script src="shared.js"></script>
+  <script src="auth-engine.js"></script>
+  <script src="production-auth-cleanup.js"></script>
+  <script>
+    if(StackupAuth.guard()){
+      (()=> {
+        const session=StackupAuth.current();
+        if(!session)return;
+        const role=String(session.role||'').toUpperCase();
+        if(['OWNER','GESTOR'].includes(role))return;
+        document.querySelectorAll('.sector-grid > a.sector-card').forEach(card=>{
+          const roles=String(card.dataset.roles||'').split(',').map(x=>x.trim()).filter(Boolean);
+          card.hidden=!roles.includes(role);
+        });
+      })();
+    }
+  </script>
+</body>
+</html>
